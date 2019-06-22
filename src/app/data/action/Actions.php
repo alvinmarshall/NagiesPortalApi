@@ -14,6 +14,8 @@ class Actions
     private $requestMethod;
     public static $data;
     public static $token;
+    public static $userType;
+    public $pageNo;
 
     /**
      * Actions constructor.
@@ -39,27 +41,34 @@ class Actions
         return false;
     }
 
-    function setInstructorAction()
+    function setTeachersAction()
     {
         if ($this->isUserAuthenticated()) {
             switch ($this->request) {
-                case 'api/instructors':
+                case '/api/teachers':
                     if ($this->requestMethod == 'GET') {
                         $this->controller->index();
                         return;
                     }
                     $this->showBadRequestMessage();
                     break;
-                case "api/instructors/$this->id":
+                case "/api/teachers/$this->id":
                     if ($this->requestMethod == 'GET') {
                         $this->controller->show($this->id);
                         return;
                     }
                     $this->showBadRequestMessage();
                     break;
-                case  "api/instructors/add":
-                    if ($this->requestMethod == 'POST') {
-                        $this->controller->create();
+                case  "/api/teachers/assignment_pdf":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->assignmentFormat('pdf');
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case  "/api/teachers/assignment_image":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->assignmentFormat('jpeg');
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -67,14 +76,14 @@ class Actions
                 default:
                     null;
             }
-        }else{
+        } else {
             $this->showNotAuthenticatedMessage();
         }
     }
 
     function setStudentAction()
     {
-        if (!$this->isUserAuthenticated()) {
+        if ($this->isUserAuthenticated()) {
             switch ($this->request) {
                 case "/api/students":
                     if ($this->requestMethod == 'GET') {
@@ -97,6 +106,24 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+                case "/api/students/":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->paginateStudent();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case "/api/students/page/$this->pageNo":
+                    if ($this->requestMethod == 'GET') {
+                        if (empty($this->pageNo)) {
+                            $this->pageNo = 1;
+                        }
+                        $from_num = (5 * $this->pageNo) - 5;
+                        $this->controller->paginateStudent($this->pageNo, $from_num, 5);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -108,7 +135,7 @@ class Actions
     function setUserAction()
     {
         switch ($this->request) {
-            case "api/users":
+            case "/api/users":
                 if ($this->requestMethod == 'GET') {
                     $this->controller->index();
                     return;
@@ -116,11 +143,25 @@ class Actions
                 $this->showBadRequestMessage();
                 break;
 
-            case "api/users/login":
+            case "/api/users/parent":
                 if ($this->requestMethod == 'POST') {
                     $credentials = array(
-                        "email" =>  self::$data->email ?? null,
-                        "password" =>  self::$data->password ?? null
+                        "username" => self::$data->username ?? null,
+                        "password" => self::$data->password ?? null,
+                        "user" => self::$userType
+                    );
+                    $this->controller->authenticateUser($credentials);
+                    return;
+                }
+                $this->showBadRequestMessage();
+                break;
+
+            case "/api/users/teacher":
+                if ($this->requestMethod == 'POST') {
+                    $credentials = array(
+                        "username" => self::$data->username ?? null,
+                        "password" => self::$data->password ?? null,
+                        "user" => self::$userType
                     );
                     $this->controller->authenticateUser($credentials);
                     return;

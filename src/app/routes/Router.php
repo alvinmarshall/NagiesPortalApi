@@ -10,13 +10,13 @@ class Router
     {
         return $router = [
             "/api/students" => "StudentController@index",
+            "/api/students/" => "StudentController@paginateStudent",
+            "/api/students/page/$id" => "StudentController@paginateStudent",
             "/api/students/$id" => "StudentController@show",
-            "api/students/add" => "StudentController@create",
-            "/api/users" => "UsersController@index",
-            "/api/users/login" => "UsersController@authenticateUser",
-            "api/instructors" => "InstructorsController@index",
-            "api/instructors/$id" => "InstructorsController@show",
-            "api/instructors/add" => "InstructorsController@create"
+            "/api/users/parent" => "UsersController@authenticateUser",
+            "/api/users/teacher" => "UsersController@authenticateUser",
+            "/api/teachers/assignment_pdf" => "TeacherController@assignmentFormat",
+            "/api/teachers/assignment_image" => "TeacherController@assignmentFormat"
         ];
 
     }
@@ -43,8 +43,8 @@ class Router
     {
         $controller = [
             "students" => 'App\controller\StudentController',
-            "users" => 'ComposerIncludeFiles\app\controller\UsersController',
-            "instructors" => 'ComposerIncludeFiles\app\controller\InstructorsController'
+            "users" => 'App\controller\UsersController',
+            "teachers" => 'App\controller\TeacherController'
         ];
         $instance = $controller[$path];
         return new $instance();

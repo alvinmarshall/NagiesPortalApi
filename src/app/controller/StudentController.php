@@ -4,6 +4,7 @@
 namespace App\controller;
 
 
+use App\common\utils\PageUtils;
 use App\data\model\Students;
 use PDO;
 
@@ -21,6 +22,124 @@ class StudentController extends BaseController
         $results->execute();
         $num = $results->rowCount();
         $std->output['message'] = "Students Records";
+        $std->output['count'] = $num;
+        $std->output['students'] = [];
+        if ($num > 0) {
+            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                /**
+                 * @var number
+                 * @var string $id
+                 * @var string $Students_No
+                 * @var string $Students_Name
+                 * @var string $Dob
+                 * @var string $Gender
+                 * @var string $dob
+                 * @var string $Age
+                 * @var string $Section_Name
+                 * @var string $Faculty_Name
+                 * @var string $Semester_Name
+                 * @var string $Guardian_Name
+                 * @var string $Guardian_No
+                 * @var string $Admin_Date
+                 * @var string $Image
+                 * @var string $Index_No
+                 * @var string $Level_Name
+                 */
+                $student_item = [
+                    "id" => $id,
+                    "refNo" => $Students_No,
+                    "name" => $Students_Name,
+                    "indexNo" => $Index_No,
+                    "dob" => $Dob,
+                    "gender" => $Gender,
+                    "admissionDate" => $Admin_Date,
+                    "age" => $Age,
+                    "sectionName" => $Section_Name,
+                    "facultyName" => $Faculty_Name,
+                    "semester" => $Semester_Name,
+                    "level" => $Level_Name,
+                    "guardianName" => $Guardian_Name,
+                    "guardianContact" => $Guardian_No,
+                    "image" => $Image
+                ];
+                array_push($std->output['students'], $student_item);
+            }
+            echo json_encode($std->output);
+        }
+    }
+
+    /**
+     * @param int $page
+     * @param int $from
+     * @param int $to
+     */
+    function paginateStudent(int $page = 1, int $from = 0, int $to = 5)
+    {
+        $std = new Students($this->conn);
+        $results = $std->getWithPaginate($from, $to);
+        $results->execute();
+        $num = $results->rowCount();
+        $std->output['message'] = "Students Records";
+        $std->output['count'] = $num;
+        $std->output['students'] = [];
+        $std->output['paging'] = [];
+        $total_row = $std->getTotalStudent();
+        if ($num > 0) {
+            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                /**
+                 * @var number
+                 * @var string $id
+                 * @var string $Students_No
+                 * @var string $Students_Name
+                 * @var string $Dob
+                 * @var string $Gender
+                 * @var string $dob
+                 * @var string $Age
+                 * @var string $Section_Name
+                 * @var string $Faculty_Name
+                 * @var string $Semester_Name
+                 * @var string $Guardian_Name
+                 * @var string $Guardian_No
+                 * @var string $Admin_Date
+                 * @var string $Image
+                 * @var string $Index_No
+                 * @var string $Level_Name
+                 */
+                $student_item = [
+                    "id" => $id,
+                    "refNo" => $Students_No,
+                    "name" => $Students_Name,
+                    "indexNo" => $Index_No,
+                    "dob" => $Dob,
+                    "gender" => $Gender,
+                    "admissionDate" => $Admin_Date,
+                    "age" => $Age,
+                    "sectionName" => $Section_Name,
+                    "facultyName" => $Faculty_Name,
+                    "semester" => $Semester_Name,
+                    "level" => $Level_Name,
+                    "guardianName" => $Guardian_Name,
+                    "guardianContact" => $Guardian_No,
+                    "image" => $Image
+                ];
+                array_push($std->output['students'], $student_item);
+            }
+            $page_url = "/api/students/";
+            $pagination = $this->getPaginate($page, $total_row, $to, $page_url);
+            $std->output['paging'] = $pagination;
+            echo json_encode($std->output);
+        }
+    }
+
+    function show($id)
+    {
+        $std = new Students($this->conn);
+        $results = $std->getById($id);
+        $results->execute();
+        $num = $results->rowCount();
+        $std->output['message'] = "Student Record";
         $std->output['count'] = $num;
         $std->output['students'] = array();
         if ($num > 0) {
@@ -59,18 +178,16 @@ class StudentController extends BaseController
                     "semester" => $Semester_Name,
                     "level" => $Level_Name,
                     "guardianName" => $Guardian_Name,
-                    "guardian contact" => $Guardian_No,
+                    "guardianContact" => $Guardian_No,
                     "image" => $Image
                 ];
                 array_push($std->output['students'], $student_item);
             }
+
+
             echo json_encode($std->output);
         }
-    }
 
-    function show($id)
-    {
-        echo "Student Controller show $id";
     }
 
     function create()
@@ -85,7 +202,13 @@ class StudentController extends BaseController
 
     function delete($id)
     {
-        // TODO: Implement delete() method.
+        echo "Student Controller delete $id";
+    }
+
+    private function getPaginate(int $page, int $total_rows, int $records_per_page, string $page_url)
+    {
+        $paginate = new PageUtils();
+        return $paginate->setPagination($page, $total_rows, $records_per_page, $page_url);
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+
 use App\data\action\Actions;
 use App\routes\Request;
 use App\routes\Router;
@@ -31,9 +32,12 @@ class Dispatcher
             );
             $actions::$data = $this->req->getInputData();
             $actions::$token = $this->req->getToken();
+            $actions::$userType = $this->req->getUserType();
+            $actions->pageNo = $this->req->getPage();
             $this->setAction($this->req->getModel(), $actions);
         }
     }
+
     private function setAction($model, Actions $action)
     {
         switch ($model) {
@@ -43,8 +47,8 @@ class Dispatcher
             case "users":
                 $action->setUserAction();
                 break;
-            case "instructors":
-                $action->setInstructorAction();
+            case "teachers":
+                $action->setTeachersAction();
                 break;
             default:
                 null;
