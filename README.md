@@ -9,11 +9,11 @@ composer install
 
 ## REST EndPoints
 You must login to obtain a token
-####UserType
+#### UserType
 ```bash
 parent,teacher
 ```
-###User Login
+### User Login
 endpoint: http://examplehost.com/api/users/{userType}
 ```json
 {
@@ -21,7 +21,7 @@ endpoint: http://examplehost.com/api/users/{userType}
     "password": "pwd"
 }
 ```
-###Login Response
+### Login Response
 ```json    
 {
     "status": 200,
@@ -29,7 +29,7 @@ endpoint: http://examplehost.com/api/users/{userType}
     "token": "eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL3NjaG"
 }
 ```
-###All Students Response
+### All Students Response
 endpoint: http://examplehost.com/api/students
 ```bash
 {
@@ -59,7 +59,64 @@ endpoint: http://examplehost.com/api/students
       ]
 }
 ```
-###Student Response
+
+### With Pagination Students Response
+endpoint: http://examplehost.com/api/students/page/{2}
+```bash
+{
+    "type": "Students",
+    "message": "Students Records",
+    "count": 5,
+    "students": [
+             {
+                 "id": "00",
+                 "refNo": "reference number",
+                 "name": "example name",
+                 "indexNo": "index number",
+                 "dob": "2019-05-09",
+                 "gender": "Female",
+                 "admissionDate": "2019-01-16",
+                 "age": "1",
+                 "sectionName": "year",
+                 "facultyName": "SCHOOL",
+                 "semester": "Semester",
+                 "level": "level",
+                 "guardianName": "example",
+                 "guardianContact": "000 000 000",
+                 "image": "../location/filename.jpg"
+             },
+             {...}
+             
+    ],
+    "paging": {
+        "first": "/api/students/page=1",
+        "pages": [
+            {
+                "page": 1,
+                "url": "/api/students/page=1",
+                "current_page": "no"
+            },
+            {
+                "page": 2,
+                "url": "/api/students/page=2",
+                "current_page": "yes"
+            },
+            {
+                "page": 3,
+                "url": "/api/students/page=3",
+                "current_page": "no"
+            },
+            {
+                "page": 4,
+                "url": "/api/students/page=4",
+                "current_page": "no"
+            }
+        ],
+        "last": "/api/students/page=199"
+    }
+}
+```
+### Student Response
 endpoint: http://examplehost.com/api/students/{id}
 ```json
 {
@@ -88,7 +145,7 @@ endpoint: http://examplehost.com/api/students/{id}
 }
 ```
 
-###Assignment PDF
+### Assignment PDF
 endpoint: http://examplehost.com/api/teachers/assignment_pdf
 ```json
 {
