@@ -72,6 +72,7 @@ class Students extends BaseModel implements IDataAccess
      */
     function getStudentReport($table): PDOStatement
     {
+        $this->output['type'] = 'Reports';
         /** @noinspection SqlDialectInspection */
         $query = "SELECT 
                         id, Students_No, Students_Name,

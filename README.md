@@ -165,3 +165,46 @@ endpoint: http://examplehost.com/api/teachers/assignment_pdf
     ]
 }
 ```
+### Complaint Messages
+endpoint: http://examplehost.com/api/teachers/complaints
+```json
+{
+    "type": "Complaints",
+    "message": "Complaint Messages",
+    "count": 1,
+    "complaints": [
+        {
+            "studentNo": "#",
+            "studentName": "example name",
+            "level": "level",
+            "guardianName": "example guardian",
+            "guardianContact": "000",
+            "teacherName": "example teacher",
+            "message": "hi example ",
+            "date": "0000-00-00"
+        }
+    ]
+}
+```
+### Student Report
+```bash
+format {_pdf,_image}
+```
+endpoint: http://examplehost.com/api/students/report{format}
+```json
+{
+    "type": "Reports",
+    "message": "Student Report",
+    "count": 1,
+    "report": [
+        {
+            "studentNo": "#",
+            "studentName": "example name",
+            "teacherEmail": "example teacher",
+            "fileUrl": "../location/filename.pdf",
+            "format": "pdf",
+            "date": "0000-00-00"
+        }
+    ]
+}
+```
