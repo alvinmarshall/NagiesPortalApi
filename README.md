@@ -229,3 +229,33 @@ endpoint: http://examplehost.com/api/students/complaints
 	"date":"0000-00-00"
 }
 ```
+### Parent Complaint Response
+```json    
+{
+    "type": "Complaints",
+    "message": "your complaint is sent",
+    "id": "#",
+    "errors": []
+}
+```
+endpoint: http://examplehost.com/api/teachers/complaints
+##### method: GET
+```json
+{
+    "type": "Complaints",
+    "message": "Complaint Message",
+    "count": 1,
+    "complaints": [
+        {
+            "studentNo": "example no",
+            "studentName": "example name",
+            "level": "level",
+            "guardianName": "example guardian",
+            "guardianContact": "000",
+            "teacherName": "example teacher",
+            "message": "example complaints",
+            "date": "0000-00-00"
+        }
+    ]
+}
+```
