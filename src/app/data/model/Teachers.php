@@ -64,7 +64,7 @@ class Teachers extends BaseModel implements IDataAccess
         $query = "SELECT 
                         id, Students_No, Students_Name, 
                         Level_Name, Guardian_Name, Guardian_No, 
-                        Teachers_Name, Message, Message_Date FROM complaints";
+                        Teachers_Name, Message, Message_Date FROM complaints ORDER BY Message_Date DESC ";
         $stmt = $this->dbConn->prepare($query);
         return $stmt;
     }

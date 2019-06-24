@@ -59,18 +59,44 @@ class TeacherController extends BaseController
 
     }
 
-    function getComplaints(){
+    function getComplaints()
+    {
         $model = new Teachers($this->conn);
         $results = $model->getComplaints();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = "Student Record";
+        $model->output['message'] = $num > 0 ? "Complaint Messages" : "Complaint Message";
         $model->output['count'] = $num;
-        $model->output['students'] = array();
-        if ($num == 0){
+        $model->output['complaints'] = [];
+        if ($num == 0) {
             $this->showNoDataMessage($model);
             return;
         }
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Level_Name
+             * @var string $Guardian_Name
+             * @var string $Guardian_No
+             * @var string $Message
+             * @var string $Teachers_Name
+             * @var string $Message_Date
+             */
+            $complaint_item = [
+                "studentNo" => $Students_No,
+                "studentName" => $Students_Name,
+                "level" => $Level_Name,
+                "guardianName" => $Guardian_Name,
+                "guardianContact" => $Guardian_No,
+                "teacherName" => $Teachers_Name,
+                "message" => $Message,
+                "date" => $Message_Date
+            ];
+            array_push($model->output['complaints'], $complaint_item);
+        }
+        echo json_encode($model->output);
     }
 
     private function showNoDataMessage(Teachers $tch)

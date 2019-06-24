@@ -45,8 +45,10 @@ class Students extends BaseModel implements IDataAccess
     {
         return $this->getAllStudentsQuery();
     }
-    function getWithPaginate($from_num,$to_num){
-        return $this->getStudentsWithPaginateQuery($from_num,$to_num);
+
+    function getWithPaginate($from_num, $to_num)
+    {
+        return $this->getStudentsWithPaginateQuery($from_num, $to_num);
     }
 
     function getById($id)
@@ -64,6 +66,20 @@ class Students extends BaseModel implements IDataAccess
         // TODO: Implement delete() method.
     }
 
+    /**
+     * @param $table
+     * @return bool|PDOStatement
+     */
+    function getStudentReport($table): PDOStatement
+    {
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT 
+                        id, Students_No, Students_Name,
+                        Teachers_Email, Report_File, Report_Date FROM ${table}";
+        $stmt = $this->dbConn->prepare($query);
+        return $stmt;
+    }
+
     private function getAllStudentsQuery(): PDOStatement
     {
         /** @noinspection SqlDialectInspection */
@@ -79,7 +95,7 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
-    private function getStudentsWithPaginateQuery($from,$to): PDOStatement
+    private function getStudentsWithPaginateQuery($from, $to): PDOStatement
     {
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
@@ -91,8 +107,8 @@ class Students extends BaseModel implements IDataAccess
                             Image FROM " . $this->dbTable . " LIMIT ?,? ";
 
         $stmt = $this->dbConn->prepare($query);
-        $stmt->bindParam(1,$from,PDO::PARAM_INT);
-        $stmt->bindParam(2,$to,PDO::PARAM_INT);
+        $stmt->bindParam(1, $from, PDO::PARAM_INT);
+        $stmt->bindParam(2, $to, PDO::PARAM_INT);
         return $stmt;
     }
 
@@ -117,9 +133,10 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
-    function getTotalStudent(){
+    function getTotalStudent()
+    {
         /** @noinspection SqlDialectInspection */
-        $query = "SELECT COUNT(*) AS total_rows FROM ".$this->dbTable;
+        $query = "SELECT COUNT(*) AS total_rows FROM " . $this->dbTable;
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

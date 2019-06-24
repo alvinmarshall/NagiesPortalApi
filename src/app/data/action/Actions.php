@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 
 namespace App\data\action;
@@ -73,6 +73,13 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+                case  "/api/teachers/complaints":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getComplaints();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -120,6 +127,20 @@ class Actions
                         }
                         $from_num = (5 * $this->pageNo) - 5;
                         $this->controller->paginateStudent($this->pageNo, $from_num, 5);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case "/api/students/report_pdf":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getReport('pdf');
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case "/api/students/report_image":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getReport('jpeg');
                         return;
                     }
                     $this->showBadRequestMessage();

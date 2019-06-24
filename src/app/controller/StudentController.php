@@ -190,6 +190,42 @@ class StudentController extends BaseController
 
     }
 
+    function getReport($format){
+        $model = new Students($this->conn);
+        $table = $format == 'pdf' ? 'report' : 'report_png';
+        $results = $model->getStudentReport($table);
+        $results->execute();
+        $num = $results->rowCount();
+        $model->output['message'] = "Student Report";
+        $model->output['count'] = $num;
+        $model->output['report'] = [];
+        if ($num == 0) {
+            echo json_encode($model->output);
+            return;
+        }
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+            extract($row);
+            /**
+             * @var string $Students_Name
+             * @var string $Students_No
+             * @var string $Teachers_Email
+             * @var string $Report_Date
+             * @var string $Report_File
+            */
+            $result_item = [
+                'studentNo' => $Students_No,
+                'studentName' => $Students_Name,
+                'teacherEmail' => $Teachers_Email,
+                'fileUrl' => $Report_File,
+                'format' => $format,
+                'date' => $Report_Date
+            ];
+            array_push($model->output['report'],$result_item);
+        }
+        echo json_encode($model->output);
+
+    }
+
     function create()
     {
         echo 'Student Controller create';
