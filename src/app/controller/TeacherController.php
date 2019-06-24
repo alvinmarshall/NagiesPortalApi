@@ -36,6 +36,38 @@ class TeacherController extends BaseController
         // TODO: Implement delete() method.
     }
 
+    function getMessages(){
+        $model = new Teachers($this->conn);
+        $results = $model->getMessages();
+        $results->execute();
+        $num = $results->rowCount();
+        $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
+        $model->output['count'] = $num;
+        $model->output['messages'] = [];
+        if ($num == 0){
+            $this->showNoDataMessage($model);
+            return;
+        }
+
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+            extract($row);
+            /**
+             * @var string $Message_By
+             * @var string $Message_Level
+             * @var string $M_Read
+             * @var string $Message
+            */
+            $message_item = [
+                'sender' => $Message_By,
+                'level' => $Message_Level,
+                'content' => $Message,
+                'status' => $M_Read
+            ];
+            array_push($model->output['messages'],$message_item);
+        }
+        echo json_encode($model->output);
+    }
+
     /**
      * @param $format
      */
@@ -65,7 +97,7 @@ class TeacherController extends BaseController
         $results = $model->getComplaints();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = $num > 0 ? "Complaint Messages" : "Complaint Message";
+        $model->output['message'] = $num == 1 ? "Complaint Message" : "Complaint Messages";
         $model->output['count'] = $num;
         $model->output['complaints'] = [];
         if ($num == 0) {

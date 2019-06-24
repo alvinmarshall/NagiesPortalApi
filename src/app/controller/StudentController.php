@@ -12,8 +12,30 @@ class StudentController extends BaseController
 {
     /**
      * StudentController constructor.
+     * @param $data
      */
 
+    function sendComplaints($data){
+        if (!isset($data)) return;
+        $model = new Students($this->conn);
+        $complaint_data = [
+            'sender' => $data->sender ?? null,
+            'name' => $data->name ?? null,
+            'content' => $data->content ?? null,
+            'level' => $data->level ?? null,
+            'date' => $data->date ?? null,
+            'guardian' => $data->guardian ?? null,
+            'contact' => $data->contact ?? null
+        ];
+        if ($model->sendComplaints($complaint_data)){
+            $model->output['id'] = $model->id;
+            $model->output['errors'] = $model->error;
+            echo json_encode($model->output);
+        }else{
+            $model->output['errors'] = $model->error;
+            echo json_encode($model->output);
+        }
+    }
 
     function index()
     {

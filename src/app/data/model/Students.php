@@ -8,6 +8,7 @@ use App\common\utils\Validator;
 use App\data\IDataAccess;
 use PDO;
 use PDOStatement;
+use Throwable;
 
 class Students extends BaseModel implements IDataAccess
 {
@@ -64,6 +65,37 @@ class Students extends BaseModel implements IDataAccess
     function delete($id)
     {
         // TODO: Implement delete() method.
+    }
+
+    /**
+     * @param array $complaintData
+     * @return bool
+     */
+    function sendComplaints(array $complaintData)
+    {
+        $this->output['type'] = 'Complaints';
+        /** @noinspection SqlDialectInspection */
+        $query = "INSERT INTO complaints
+                        SET 
+                            Students_No = :sender,
+                            Students_Name = :name,
+                            Message = :content,
+                            Level_Name = :level,
+                            Message_Date = :date,
+                            Guardian_Name = :guardian,
+                            Guardian_No = :contact
+                        ";
+        $this->error = [];
+        $stmt = $this->dbConn->prepare($query);
+        $field = ['sender', 'name', 'content', 'level', 'date', 'guardian', 'contact'];
+        $input = [$complaintData['sender'], $complaintData['name'], $complaintData['content'],
+            $complaintData['level'], $complaintData['date'], $complaintData['guardian'], $complaintData['contact']];
+
+        $isInputValid = $this->validateInput($field, $input);
+        if ($isInputValid) {
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return false;
     }
 
     /**
@@ -142,5 +174,42 @@ class Students extends BaseModel implements IDataAccess
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total_rows'];
+    }
+
+    private function validateInput($fields, $inputs): bool
+    {
+        foreach ($inputs as $input => $data) {
+            if (empty($data)) {
+                $this->error[$fields[$input]] = "can't be empty";
+            }
+        }
+        if (array_count_values($this->error)) {
+            http_response_code(400);
+            $this->output['status'] = 400;
+            return false;
+        }
+        return true;
+    }
+
+    private function bindAllParams(PDOStatement $stmt, $params, $fields)
+    {
+        foreach ($params as $param => $val) {
+            $stmt->bindParam(':' . $fields[$param], $params[$param]);
+        }
+        return $stmt;
+    }
+
+    private function prepareToInsertData(PDOStatement $stmt, array $inputs, array $fields): bool
+    {
+        $this->bindAllParams($stmt, $inputs, $fields);
+        try {
+            $stmt->execute();
+            $this->id = $this->dbConn->lastInsertId();
+            $this->output['message'] = 'your complaint is sent';
+            return true;
+        } catch (Throwable $e) {
+            $this->error['mysql'] = $e->getMessage();
+            return false;
+        }
     }
 }
