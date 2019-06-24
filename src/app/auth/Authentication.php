@@ -8,8 +8,8 @@ use Firebase\JWT\JWT;
 
 class Authentication
 {
-    public static $role;
     public static $error;
+    private static $token_data;
     public static $jwt_package = array(
         "key" => "portal_key",
         "alg" => array('HS256'),
@@ -31,12 +31,11 @@ class Authentication
         $decode = null;
         if ($token) {
             try {
-                $decode = JWT::decode($token, $key,$alg);
-                self::$role = $decode->data->role;
+                $decode = JWT::decode($token, $key, $alg);
+                self::$token_data = self::decodeTokenData($decode);
                 return $decode;
             } catch (Exception $e) {
                 self::$error = $e->getMessage();
-                echo self::$error;
                 return null;
             }
         }
@@ -52,7 +51,7 @@ class Authentication
     {
         $encode = null;
 
-        if ($jwt!=null && $user_data != null) {
+        if ($jwt != null && $user_data != null) {
             /** @var string $iss
              * @var string $aud
              * @var int $iat
@@ -62,10 +61,10 @@ class Authentication
             extract($jwt);
             /**
              * @var string $id
-             * @var string $firstname
-             * @var string $lastname
-             * @var string $email
-             * @var string $role
+             * @var string $full_name
+             * @var string $username
+             * @var string $level
+             * @var string $image
              */
             extract($user_data);
             $token = array(
@@ -75,10 +74,10 @@ class Authentication
                 "nbf" => $nbf,
                 "data" => array(
                     "id" => $id,
-                    "firstname" => $firstname,
-                    "lastname" => $lastname,
-                    "email" => $email,
-                    "role" => $role
+                    "full_name" => $full_name,
+                    "username" => $username,
+                    "image" => $image,
+                    "level" => $level
                 )
             );
             $encode = JWT::encode($token, $key);
@@ -87,18 +86,34 @@ class Authentication
         return $encode;
     }
 
-    public static function isJWTTokenValid($token){
+    public static function isJWTTokenValid($token)
+    {
         $decode = null;
-        if($token == null) return false;
+        if ($token == null) return false;
         try {
-            $decode = self::decodeJWTToken($token,self::$jwt_package['key'],self::$jwt_package['alg']);
-            if ($decode){
+            $decode = self::decodeJWTToken($token, self::$jwt_package['key'], self::$jwt_package['alg']);
+            if ($decode) {
                 return true;
             }
         } catch (Exception $e) {
             self::$error = $e;
         }
         return false;
+    }
+
+    private static function decodeTokenData($decode)
+    {
+        return $login_user_data = [
+            "id" => $decode->data->id,
+            "full_name" => $decode->data->full_name,
+            "username" => $decode->data->username,
+            "image" => $decode->data->image,
+            "level" => $decode->data->level
+        ];
+    }
+
+    public static function getDecodedData(){
+        return self::$token_data;
     }
 
 }

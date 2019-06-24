@@ -14,6 +14,8 @@ class Request
     private $header;
     private $data;
     private $token;
+    private $user;
+    private $page;
 
     /**
      * Request constructor.
@@ -24,6 +26,8 @@ class Request
         $this->explode_url = explode('/', $this->uri);
         $this->home = $this->explode_url[1] ?? '';
         $this->model = $this->explode_url[2] ?? '';
+        $this->user = $this->explode_url[3] ?? '';
+        $this->page = $this->explode_url[4] ?? '';
         $this->header = apache_request_headers();
         $jwt = $this->header['Authorization'] ?? '';
         if (!empty($jwt)) {
@@ -35,6 +39,11 @@ class Request
     function getToken()
     {
         return $this->token ?? null;
+    }
+
+    function getUserType()
+    {
+        return $this->user;
     }
 
     public function getRequestUri()
@@ -53,6 +62,11 @@ class Request
     public function getParams()
     {
         return intval(end($this->explode_url));
+    }
+
+    public function getPage()
+    {
+        return intval($this->page);
     }
 
     public function getModel()

@@ -4,8 +4,10 @@
 namespace App\data\model;
 
 
+use App\common\utils\Validator;
 use App\data\IDataAccess;
 use PDO;
+use PDOStatement;
 
 class Students extends BaseModel implements IDataAccess
 {
@@ -44,9 +46,14 @@ class Students extends BaseModel implements IDataAccess
         return $this->getAllStudentsQuery();
     }
 
+    function getWithPaginate($from_num, $to_num)
+    {
+        return $this->getStudentsWithPaginateQuery($from_num, $to_num);
+    }
+
     function getById($id)
     {
-        // TODO: Implement getById() method.
+        return $this->getStudentQuery($id);
     }
 
     function update($id)
@@ -59,7 +66,22 @@ class Students extends BaseModel implements IDataAccess
         // TODO: Implement delete() method.
     }
 
-    private function getAllStudentsQuery()
+    /**
+     * @param $table
+     * @return bool|PDOStatement
+     */
+    function getStudentReport($table): PDOStatement
+    {
+        $this->output['type'] = 'Reports';
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT 
+                        id, Students_No, Students_Name,
+                        Teachers_Email, Report_File, Report_Date FROM ${table}";
+        $stmt = $this->dbConn->prepare($query);
+        return $stmt;
+    }
+
+    private function getAllStudentsQuery(): PDOStatement
     {
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
@@ -68,9 +90,57 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " LIMIT 5";
+                            Image FROM " . $this->dbTable . " LIMIT 5,15";
 
         $stmt = $this->dbConn->prepare($query);
         return $stmt;
+    }
+
+    private function getStudentsWithPaginateQuery($from, $to): PDOStatement
+    {
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT
+                            id, Students_No, 
+                            Students_Name, Dob, Gender,
+                            Admin_Date, Age, Section_Name,
+                            Faculty_Name, Level_Name, Semester_Name,
+                            Index_No, Guardian_Name, Guardian_No,
+                            Image FROM " . $this->dbTable . " LIMIT ?,? ";
+
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $from, PDO::PARAM_INT);
+        $stmt->bindParam(2, $to, PDO::PARAM_INT);
+        return $stmt;
+    }
+
+    /**
+     * @param $id
+     * @return bool|PDOStatement
+     */
+    private function getStudentQuery($id)
+    {
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT
+                            id, Students_No, 
+                            Students_Name, Dob, Gender,
+                            Admin_Date, Age, Section_Name,
+                            Faculty_Name, Level_Name, Semester_Name,
+                            Index_No, Guardian_Name, Guardian_No,
+                            Image FROM " . $this->dbTable . " WHERE id = :id";
+
+        $stmt = $this->dbConn->prepare($query);
+        $id = Validator::singleInput($id);
+        $stmt->bindParam(':id', $id);
+        return $stmt;
+    }
+
+    function getTotalStudent()
+    {
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT COUNT(*) AS total_rows FROM " . $this->dbTable;
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total_rows'];
     }
 }
