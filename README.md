@@ -238,6 +238,7 @@ endpoint: http://examplehost.com/api/students/complaints
     "errors": []
 }
 ```
+### Teacher's Complaint Messages
 endpoint: http://examplehost.com/api/teachers/complaints
 ##### method: GET
 ```json
