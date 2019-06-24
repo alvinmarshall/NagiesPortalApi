@@ -238,25 +238,3 @@ endpoint: http://examplehost.com/api/students/complaints
     "errors": []
 }
 ```
-### Teacher's Complaint Messages
-endpoint: http://examplehost.com/api/teachers/complaints
-##### method: GET
-```json
-{
-    "type": "Complaints",
-    "message": "Complaint Message",
-    "count": 1,
-    "complaints": [
-        {
-            "studentNo": "example no",
-            "studentName": "example name",
-            "level": "level",
-            "guardianName": "example guardian",
-            "guardianContact": "000",
-            "teacherName": "example teacher",
-            "message": "example complaints",
-            "date": "0000-00-00"
-        }
-    ]
-}
-```
