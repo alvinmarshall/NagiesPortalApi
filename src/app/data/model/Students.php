@@ -4,6 +4,7 @@
 namespace App\data\model;
 
 
+use App\auth\Authentication;
 use App\common\utils\Validator;
 use App\data\IDataAccess;
 use PDO;
@@ -42,11 +43,19 @@ class Students extends BaseModel implements IDataAccess
         // TODO: Implement add() method.
     }
 
+    /**
+     * @return PDOStatement
+     */
     function get()
     {
         return $this->getAllStudentsQuery();
     }
 
+    /**
+     * @param $from_num
+     * @param $to_num
+     * @return PDOStatement
+     */
     function getWithPaginate($from_num, $to_num)
     {
         return $this->getStudentsWithPaginateQuery($from_num, $to_num);
@@ -113,6 +122,9 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
+    /**
+     * @return PDOStatement
+     */
     private function getAllStudentsQuery(): PDOStatement
     {
         /** @noinspection SqlDialectInspection */
@@ -128,6 +140,11 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @return PDOStatement
+     */
     private function getStudentsWithPaginateQuery($from, $to): PDOStatement
     {
         /** @noinspection SqlDialectInspection */
@@ -166,6 +183,9 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
+    /**
+     * @return mixed
+     */
     function getTotalStudent()
     {
         /** @noinspection SqlDialectInspection */
@@ -176,6 +196,11 @@ class Students extends BaseModel implements IDataAccess
         return $row['total_rows'];
     }
 
+    /**
+     * @param $fields
+     * @param $inputs
+     * @return bool
+     */
     private function validateInput($fields, $inputs): bool
     {
         foreach ($inputs as $input => $data) {
@@ -191,6 +216,12 @@ class Students extends BaseModel implements IDataAccess
         return true;
     }
 
+    /**
+     * @param PDOStatement $stmt
+     * @param $params
+     * @param $fields
+     * @return PDOStatement
+     */
     private function bindAllParams(PDOStatement $stmt, $params, $fields)
     {
         foreach ($params as $param => $val) {
@@ -199,6 +230,12 @@ class Students extends BaseModel implements IDataAccess
         return $stmt;
     }
 
+    /**
+     * @param PDOStatement $stmt
+     * @param array $inputs
+     * @param array $fields
+     * @return bool
+     */
     private function prepareToInsertData(PDOStatement $stmt, array $inputs, array $fields): bool
     {
         $this->bindAllParams($stmt, $inputs, $fields);
@@ -211,5 +248,40 @@ class Students extends BaseModel implements IDataAccess
             $this->error['mysql'] = $e->getMessage();
             return false;
         }
+    }
+
+    /**
+     * @param $table
+     * @param $format
+     * @return bool|PDOStatement
+     */
+    function getAssignmentType($table, $format)
+    {
+        $this->output['type'] = 'Assignment' . $format;
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT
+                    id, Students_No, Students_Name,
+                    Teachers_Email, Report_File, Report_Date FROM " . $table;
+        $stmt = $this->dbConn->prepare($query);
+        return $stmt;
+    }
+
+    /**
+     * @return bool|PDOStatement|null
+     */
+    function getMessages()
+    {
+        $level = Authentication::getDecodedData()['level'] ?? null;
+        if ($level == null) {
+            return null;
+        }
+        $this->output['type'] = 'Messages';
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT 
+                        id, Message_BY, M_Date, Message, Message_Level, M_Read
+                        FROM message WHERE Message_Level = ? ORDER BY M_Date DESC ";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $level);
+        return $stmt;
     }
 }

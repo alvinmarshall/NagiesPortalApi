@@ -7,6 +7,8 @@ namespace App\data\model;
 use App\auth\Authentication;
 use App\data\IDataAccess;
 use PDO;
+use PDOStatement;
+use Throwable;
 
 class Teachers extends BaseModel implements IDataAccess
 {
@@ -91,4 +93,57 @@ class Teachers extends BaseModel implements IDataAccess
         $stmt->bindParam(1, $level);
         return $stmt;
     }
+
+    /**
+     * @param $format
+     * @param $destination
+     * @return bool
+     */
+    function sendAssignment($format, $destination): bool
+    {
+        $this->output['type'] = 'Assignment' . strtoupper($format);
+        $table = $format == 'pdf' ? 'assignment' : 'assignment_image';
+        $level = Authentication::getDecodedData()['level'] ?? null;
+        $date = date('Y-m-d');
+        $name = Authentication::getDecodedData()['username'] ?? null;
+
+        /** @noinspection SqlDialectInspection */
+        $query = "INSERT INTO ${table}
+                        SET 
+                            Students_No = :number,
+                            Students_Name = :name,
+                            Teachers_Email = :email,
+                            Report_File = :destination,
+                            Report_Date = :date
+                        ";
+        $stmt = $this->dbConn->prepare($query);
+        $field = ['number', 'name', 'email', 'destination', 'date'];
+        $input = [$level, $name, $level, $destination, $date];
+        $this->output['message'] = 'File upload successful';
+        $this->output['format'] = $format;
+        return $this->prepareToInsertData($stmt, $input, $field);
+    }
+
+    private function bindAllParams(PDOStatement $stmt, $params, $fields)
+    {
+        foreach ($params as $param => $val) {
+            $stmt->bindParam(':' . $fields[$param], $params[$param]);
+        }
+        return $stmt;
+    }
+
+    private function prepareToInsertData(PDOStatement $stmt, array $inputs, array $fields): bool
+    {
+        $this->bindAllParams($stmt, $inputs, $fields);
+        try {
+            $stmt->execute();
+            $this->output['path'] = $inputs[3];
+            $this->id = $this->dbConn->lastInsertId();
+            return true;
+        } catch (Throwable $e) {
+            $this->error['mysql'] = $e->getMessage();
+            return false;
+        }
+    }
+
 }

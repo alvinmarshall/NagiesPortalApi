@@ -36,7 +36,32 @@ class TeacherController extends BaseController
         // TODO: Implement delete() method.
     }
 
-    function getMessages(){
+    function sendAssignment()
+    {
+        if (isset($_FILES['pdf']['name'])) {
+            $upload_dir = '/students/uploads/';
+            $file_info = pathinfo($_FILES['pdf']['name']);
+            $file_name = $file_info['filename'];
+            $extension = $file_info['extension'];
+            $destination = SITE_ROOT . $upload_dir . $file_name . '.' . $extension;
+            $this->prepareToUploadFile('pdf',$destination, $upload_dir, $file_name, $extension);
+
+        } elseif (isset($_FILES['image']['name'])) {
+            $upload_dir = '/students/uploads/';
+            $file_info = pathinfo($_FILES['image']['name']);
+            $file_name = $file_info['filename'];
+            $extension = $file_info['extension'];
+            $destination = SITE_ROOT . $upload_dir . $file_name . '.' . $extension;
+            $this->prepareToUploadFile('image',$destination, $upload_dir, $file_name, $extension);
+
+        } else {
+            echo json_encode(array('message' => 'No file to upload'));
+        }
+
+    }
+
+    function getMessages()
+    {
         $model = new Teachers($this->conn);
         $results = $model->getMessages();
         $results->execute();
@@ -44,26 +69,26 @@ class TeacherController extends BaseController
         $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
         $model->output['count'] = $num;
         $model->output['messages'] = [];
-        if ($num == 0){
+        if ($num == 0) {
             $this->showNoDataMessage($model);
             return;
         }
 
-        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             /**
              * @var string $Message_By
              * @var string $Message_Level
              * @var string $M_Read
              * @var string $Message
-            */
+             */
             $message_item = [
                 'sender' => $Message_By,
                 'level' => $Message_Level,
                 'content' => $Message,
                 'status' => $M_Read
             ];
-            array_push($model->output['messages'],$message_item);
+            array_push($model->output['messages'], $message_item);
         }
         echo json_encode($model->output);
     }
@@ -176,6 +201,32 @@ class TeacherController extends BaseController
                 array_push($model->output['Assignment' . $format], $assigment_items);
             }
             echo json_encode($model->output);
+        }
+    }
+
+    /**
+     * @param string $format
+     * @param string $destination
+     * @param string $upload_dir
+     * @param $file_name
+     * @param $extension
+     */
+    private function prepareToUploadFile(string $format, string $destination, string $upload_dir, $file_name, $extension): void
+    {
+        if (move_uploaded_file($_FILES[$format]['tmp_name'], $destination)) {
+            $model = new Teachers($this->conn);
+            $location = $upload_dir . $file_name . '.' . $extension;
+            if ($model->sendAssignment($format, $location)) {
+                $model->output['id'] = $model->id;
+                $model->output['errors'] = $model->error;
+                echo json_encode($model->output);
+            } else {
+                $model->output['errors'] = $model->error;
+                echo json_encode($model->output);
+            }
+
+        } else {
+            echo json_encode(array('message' => 'attempting to upload file failed'));
         }
     }
 

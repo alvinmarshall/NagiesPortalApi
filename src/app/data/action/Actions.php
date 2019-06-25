@@ -87,6 +87,21 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+                case  "/api/teachers/upload_assignment_pdf":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->sendAssignment();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case  "/api/teachers/upload_assignment_image":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->sendAssignment();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -155,6 +170,27 @@ class Actions
                 case "/api/students/complaints":
                     if ($this->requestMethod == 'POST') {
                         $this->controller->sendComplaints(self::$data);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case  "/api/students/assignment_pdf":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->assignmentFormat('pdf');
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case  "/api/students/assignment_image":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->assignmentFormat('jpeg');
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+                case  "/api/students/messages":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getMessages();
                         return;
                     }
                     $this->showBadRequestMessage();

@@ -238,3 +238,39 @@ endpoint: http://examplehost.com/api/students/complaints
     "errors": []
 }
 ```
+
+### Send Assignment PDF
+endpoint: http://examplehost.com/api/teachers/upload_assignment_pdf
+##### method: POST
+```bash
+Use formdata to upload file, example in postman
+set the key to pdf or set name attribute in html to pdf
+```
+### Send Assignment PDF Response
+```json
+{
+    "type": "AssignmentPDF",
+    "message": "File upload successful",
+    "path": "/location/uploads/filename.pdf",
+    "id": "#",
+    "errors": null
+}
+```
+### Send Assignment IMAGE
+endpoint: http://examplehost.com/api/teachers/upload_assignment_image
+##### method: POST
+```bash
+Use formdata to upload file, example in postman
+set the key to image or set name attribute in html to image
+```
+### Send Assignment Image Response
+```json
+{
+    "type": "AssignmentIMAGE",
+    "message": "File upload successful",
+    "format": "image",
+    "path": "/location/uploads/filename.png",
+    "id": "#",
+    "errors": null
+}
+```
