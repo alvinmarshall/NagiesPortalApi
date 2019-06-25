@@ -72,7 +72,7 @@ class Users extends BaseModel
     {
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
-                    id, Level_Name, Index_No, Password, Image  
+                    Students_No, Level_Name, Index_No, Password, Image  
                     FROM " . $userType . " WHERE Index_No = :username LIMIT 1";
 
         self::$user_name = Validator::singleInput($username);
@@ -82,13 +82,13 @@ class Users extends BaseModel
             if ($stmt->rowCount() > 0) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     /**@var string $Index_No
-                     * @var string $id
+                     * @var string $Students_No
                      * @var string $Password
                      * @var string $Level_Name
                      * @var string $Image
                      */
                     extract($row);
-                    $this->id = $id;
+                    $this->id = $Students_No;
                     self::$user_name = $Index_No;
                     self::$password = $Password;
                     self::$level = $Level_Name;

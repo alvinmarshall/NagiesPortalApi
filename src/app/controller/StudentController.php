@@ -7,13 +7,37 @@ namespace App\controller;
 use App\common\utils\PageUtils;
 use App\data\model\Students;
 use PDO;
+use PDOStatement;
 
 class StudentController extends BaseController
 {
     /**
      * StudentController constructor.
+     * @param $data
      */
 
+    function sendComplaints($data)
+    {
+        if (!isset($data)) return;
+        $model = new Students($this->conn);
+        $complaint_data = [
+            'sender' => $data->sender ?? null,
+            'name' => $data->name ?? null,
+            'content' => $data->content ?? null,
+            'level' => $data->level ?? null,
+            'date' => $data->date ?? null,
+            'guardian' => $data->guardian ?? null,
+            'contact' => $data->contact ?? null
+        ];
+        if ($model->sendComplaints($complaint_data)) {
+            $model->output['id'] = $model->id;
+            $model->output['errors'] = $model->error;
+            echo json_encode($model->output);
+        } else {
+            $model->output['errors'] = $model->error;
+            echo json_encode($model->output);
+        }
+    }
 
     function index()
     {
@@ -133,6 +157,9 @@ class StudentController extends BaseController
         }
     }
 
+    /**
+     * @param $id
+     */
     function show($id)
     {
         $std = new Students($this->conn);
@@ -183,14 +210,16 @@ class StudentController extends BaseController
                 ];
                 array_push($std->output['students'], $student_item);
             }
-
-
             echo json_encode($std->output);
         }
 
     }
 
-    function getReport($format){
+    /**
+     * @param $format
+     */
+    function getReport($format)
+    {
         $model = new Students($this->conn);
         $table = $format == 'pdf' ? 'report' : 'report_png';
         $results = $model->getStudentReport($table);
@@ -203,7 +232,7 @@ class StudentController extends BaseController
             echo json_encode($model->output);
             return;
         }
-        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             /**
              * @var string $Students_Name
@@ -211,7 +240,7 @@ class StudentController extends BaseController
              * @var string $Teachers_Email
              * @var string $Report_Date
              * @var string $Report_File
-            */
+             */
             $result_item = [
                 'studentNo' => $Students_No,
                 'studentName' => $Students_Name,
@@ -220,9 +249,32 @@ class StudentController extends BaseController
                 'format' => $format,
                 'date' => $Report_Date
             ];
-            array_push($model->output['report'],$result_item);
+            array_push($model->output['report'], $result_item);
         }
         echo json_encode($model->output);
+
+    }
+
+    /**
+     * @param $format
+     */
+    function assignmentFormat($format)
+    {
+        $model = new Students($this->conn);
+        $results = null;
+        $format = strtoupper($format);
+        switch ($format) {
+            case 'PDF':
+                $results = $model->getAssignmentType('assignment', $format);
+                $this->getAssignment($format, $results, $model);
+                break;
+            case 'JPEG':
+                $results = $model->getAssignmentType('assignment_image', $format);
+                $this->getAssignment($format, $results, $model);
+                break;
+            default:
+                null;
+        }
 
     }
 
@@ -241,11 +293,102 @@ class StudentController extends BaseController
         echo "Student Controller delete $id";
     }
 
+    /**
+     * @param int $page
+     * @param int $total_rows
+     * @param int $records_per_page
+     * @param string $page_url
+     * @return array
+     */
     private function getPaginate(int $page, int $total_rows, int $records_per_page, string $page_url)
     {
         $paginate = new PageUtils();
         return $paginate->setPagination($page, $total_rows, $records_per_page, $page_url);
     }
 
+    /**
+     * @param $format
+     * @param PDOStatement $results
+     * @param Students $model
+     */
+    private function getAssignment($format, PDOStatement $results, Students $model)
+    {
+        $results->execute();
+        $num = $results->rowCount();
+
+        $model->output['status'] = 200;
+        $model->output['message'] = 'Available Assignment ' . $format;
+        $model->output['count'] = $num;
+        $model->output['Assignment' . $format] = [];
+
+        if ($num == 0) {
+            $this->showNoDataMessage($model);
+            return;
+        }
+        if ($num > 0) {
+            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                /**
+                 * @var string $id
+                 * @var string $Students_No
+                 * @var string $Students_Name
+                 * @var string $Report_File
+                 * @var string $Report_Date
+                 * @var string $Teachers_Email
+                 **/
+                $assigment_items = [
+                    "id" => $id,
+                    "studentNo" => $Students_No,
+                    "studentName" => $Students_Name,
+                    "teacherEmail" => $Teachers_Email,
+                    "reportFile" => $Report_File,
+                    "reportDate" => $Report_Date
+                ];
+                array_push($model->output['Assignment' . $format], $assigment_items);
+            }
+            echo json_encode($model->output);
+        }
+    }
+
+    private function showNoDataMessage(Students $tch)
+    {
+        http_response_code(404);
+        $tch->output['status'] = 404;
+        $tch->output['message'] = "No Data Available";
+        $tch->output['count'] = 0;
+        echo json_encode($tch->output);
+    }
+
+    function getMessages(){
+        $model = new Students($this->conn);
+        $results = $model->getMessages();
+        $results->execute();
+        $num = $results->rowCount();
+        $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
+        $model->output['count'] = $num;
+        $model->output['messages'] = [];
+        if ($num == 0){
+            $this->showNoDataMessage($model);
+            return;
+        }
+
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+            extract($row);
+            /**
+             * @var string $Message_By
+             * @var string $Message_Level
+             * @var string $M_Read
+             * @var string $Message
+             */
+            $message_item = [
+                'sender' => $Message_By,
+                'level' => $Message_Level,
+                'content' => $Message,
+                'status' => $M_Read
+            ];
+            array_push($model->output['messages'],$message_item);
+        }
+        echo json_encode($model->output);
+    }
 
 }

@@ -9,17 +9,32 @@ class Router
     public static function getRoute($id)
     {
         return $router = [
+            /**Students routes*/
             "/api/students" => "StudentController@index",
             "/api/students/" => "StudentController@paginateStudent",
             "/api/students/page/$id" => "StudentController@paginateStudent",
             "/api/students/$id" => "StudentController@show",
             "/api/students/report_pdf" => "StudentController@getReport",
             "/api/students/report_image" => "StudentController@getReport",
+            "/api/students/complaints" => "StudentController@sendComplaints",
+            "/api/students/assignment_pdf" => "StudentController@assignmentFormat",
+            "/api/students/assignment_image" => "StudentController@assignmentFormat",
+            "/api/students/messages" => "StudentController@getMessages",
+
+
+            /**Users routes*/
             "/api/users/parent" => "UsersController@authenticateUser",
             "/api/users/teacher" => "UsersController@authenticateUser",
+
+            /**Teachers routes*/
             "/api/teachers/assignment_pdf" => "TeacherController@assignmentFormat",
             "/api/teachers/assignment_image" => "TeacherController@assignmentFormat",
-            "/api/teachers/complaints" => "TeacherController@getComplaints"
+            "/api/teachers/complaints" => "TeacherController@getComplaints",
+            "/api/teachers/messages" => "TeacherController@getMessages",
+            "/api/teachers/upload_assignment_pdf" => "TeacherController@sendAssignmentPDF",
+            "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage"
+
+
         ];
 
     }

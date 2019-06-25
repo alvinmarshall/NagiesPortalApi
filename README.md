@@ -15,6 +15,7 @@ parent,teacher
 ```
 ### User Login
 endpoint: http://examplehost.com/api/users/{userType}
+##### method: POST
 ```json
 {
     "username": "example@me.com",
@@ -31,6 +32,7 @@ endpoint: http://examplehost.com/api/users/{userType}
 ```
 ### All Students Response
 endpoint: http://examplehost.com/api/students
+##### method: GET
 ```bash
 {
   "type": "Students",
@@ -62,6 +64,7 @@ endpoint: http://examplehost.com/api/students
 
 ### With Pagination Students Response
 endpoint: http://examplehost.com/api/students/page/{2}
+##### method: GET
 ```bash
 {
     "type": "Students",
@@ -118,6 +121,7 @@ endpoint: http://examplehost.com/api/students/page/{2}
 ```
 ### Student Response
 endpoint: http://examplehost.com/api/students/{id}
+##### method: GET
 ```json
 {
   "type": "Students",
@@ -147,6 +151,7 @@ endpoint: http://examplehost.com/api/students/{id}
 
 ### Assignment PDF
 endpoint: http://examplehost.com/api/teachers/assignment_pdf
+##### method: GET
 ```json
 {
     "type": "AssignmentPDF",
@@ -167,6 +172,7 @@ endpoint: http://examplehost.com/api/teachers/assignment_pdf
 ```
 ### Complaint Messages
 endpoint: http://examplehost.com/api/teachers/complaints
+##### method: GET
 ```json
 {
     "type": "Complaints",
@@ -191,6 +197,7 @@ endpoint: http://examplehost.com/api/teachers/complaints
 format {_pdf,_image}
 ```
 endpoint: http://examplehost.com/api/students/report{format}
+##### method: GET
 ```json
 {
     "type": "Reports",
@@ -206,5 +213,64 @@ endpoint: http://examplehost.com/api/students/report{format}
             "date": "0000-00-00"
         }
     ]
+}
+```
+### Parent Complaints
+endpoint: http://examplehost.com/api/students/complaints
+##### method: POST
+```json
+{
+	"sender":"example sender",
+	"name":"example name",
+	"content":"example content",
+	"level":"level",
+	"guardian":"example guardian",
+	"contact":"0000",
+	"date":"0000-00-00"
+}
+```
+### Parent Complaint Response
+```json    
+{
+    "type": "Complaints",
+    "message": "your complaint is sent",
+    "id": "#",
+    "errors": []
+}
+```
+
+### Send Assignment PDF
+endpoint: http://examplehost.com/api/teachers/upload_assignment_pdf
+##### method: POST
+```bash
+Use formdata to upload file, example in postman
+set the key to pdf or set name attribute in html to pdf
+```
+### Send Assignment PDF Response
+```json
+{
+    "type": "AssignmentPDF",
+    "message": "File upload successful",
+    "path": "/location/uploads/filename.pdf",
+    "id": "#",
+    "errors": null
+}
+```
+### Send Assignment IMAGE
+endpoint: http://examplehost.com/api/teachers/upload_assignment_image
+##### method: POST
+```bash
+Use formdata to upload file, example in postman
+set the key to image or set name attribute in html to image
+```
+### Send Assignment Image Response
+```json
+{
+    "type": "AssignmentIMAGE",
+    "message": "File upload successful",
+    "format": "image",
+    "path": "/location/uploads/filename.png",
+    "id": "#",
+    "errors": null
 }
 ```
