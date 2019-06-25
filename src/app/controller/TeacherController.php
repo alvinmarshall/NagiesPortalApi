@@ -4,6 +4,7 @@
 namespace App\controller;
 
 
+use App\common\utils\DirectoryUtils;
 use App\data\model\Teachers;
 use PDO;
 use PDOStatement;
@@ -38,21 +39,21 @@ class TeacherController extends BaseController
 
     function sendAssignment()
     {
+        $upload_dir = './students/uploads/';
         if (isset($_FILES['pdf']['name'])) {
-            $upload_dir = '/students/uploads/';
+            DirectoryUtils::createDir($upload_dir);
             $file_info = pathinfo($_FILES['pdf']['name']);
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
-            $destination = SITE_ROOT . $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('pdf',$destination, $upload_dir, $file_name, $extension);
+            $destination = $upload_dir . $file_name . '.' . $extension;
+            $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension);
 
         } elseif (isset($_FILES['image']['name'])) {
-            $upload_dir = '/students/uploads/';
             $file_info = pathinfo($_FILES['image']['name']);
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
-            $destination = SITE_ROOT . $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('image',$destination, $upload_dir, $file_name, $extension);
+            $destination = $upload_dir . $file_name . '.' . $extension;
+            $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension);
 
         } else {
             echo json_encode(array('message' => 'No file to upload'));
