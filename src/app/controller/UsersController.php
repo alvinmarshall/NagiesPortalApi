@@ -81,6 +81,7 @@ class UsersController extends BaseController
                 "iss" => Authentication::$jwt_package['iss'],
                 "aud" => Authentication::$jwt_package['aud'],
                 "iat" => Authentication::$jwt_package['iat'],
+                "exp" => Authentication::$jwt_package['exp'],
                 "nbf" => Authentication::$jwt_package['nbf'],
                 "key" => Authentication::$jwt_package['key']
             );

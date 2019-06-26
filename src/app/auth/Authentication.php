@@ -2,7 +2,9 @@
 
 
 namespace App\auth;
-
+define('iat', time());
+define('nbf', iat + 10);
+define('exp', nbf + 86400); // since 24 hours = 86,400 seconds
 use Exception;
 use Firebase\JWT\JWT;
 
@@ -15,8 +17,9 @@ class Authentication
         "alg" => array('HS256'),
         "iss" => "http://infordasgh.com",
         "aud" => "http://infordasgh.com",
-        "iat" => 1356999524,
-        "nbf" => 1357000000
+        "iat" => iat,
+        "nbf" => nbf,
+        "exp" => exp
     );
 
 
@@ -65,6 +68,7 @@ class Authentication
              * @var string $username
              * @var string $level
              * @var string $image
+             * @var string $exp
              */
             extract($user_data);
             $token = array(
@@ -72,6 +76,7 @@ class Authentication
                 "aud" => $aud,
                 "iat" => $iat,
                 "nbf" => $nbf,
+                "exp" => $exp,
                 "data" => array(
                     "id" => $id,
                     "full_name" => $full_name,
