@@ -49,6 +49,7 @@ class TeacherController extends BaseController
             $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension);
 
         } elseif (isset($_FILES['image']['name'])) {
+            DirectoryUtils::createDir($upload_dir);
             $file_info = pathinfo($_FILES['image']['name']);
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
