@@ -76,7 +76,6 @@ class Authentication
                 "aud" => $aud,
                 "iat" => $iat,
                 "nbf" => $nbf,
-                "exp" => $exp,
                 "data" => array(
                     "id" => $id,
                     "full_name" => $full_name,

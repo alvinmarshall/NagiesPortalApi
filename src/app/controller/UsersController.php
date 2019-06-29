@@ -81,7 +81,6 @@ class UsersController extends BaseController
                 "iss" => Authentication::$jwt_package['iss'],
                 "aud" => Authentication::$jwt_package['aud'],
                 "iat" => Authentication::$jwt_package['iat'],
-                "exp" => Authentication::$jwt_package['exp'],
                 "nbf" => Authentication::$jwt_package['nbf'],
                 "key" => Authentication::$jwt_package['key']
             );
@@ -95,6 +94,8 @@ class UsersController extends BaseController
             );
             $model->output['status'] = 200;
             $model->output['message'] = 'Login Successful';
+            $model->output['uuid'] = $model->id;
+            $model->output['imageUrl'] = $model::$image;
             $model->output['token'] = Authentication::encodeJWTToken($jwt, $user_data);
             echo json_encode($model->output);
 

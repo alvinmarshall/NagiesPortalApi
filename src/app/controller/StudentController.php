@@ -41,13 +41,14 @@ class StudentController extends BaseController
 
     function index()
     {
-        $std = new Students($this->conn);
-        $results = $std->get();
+        $model = new Students($this->conn);
+        $results = $model->get();
         $results->execute();
         $num = $results->rowCount();
-        $std->output['message'] = "Students Records";
-        $std->output['count'] = $num;
-        $std->output['students'] = [];
+        $model->output['status'] = 200;
+        $model->output['message'] = "Students Records";
+        $model->output['count'] = $num;
+        $model->output['students'] = [];
         if ($num > 0) {
             while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
@@ -87,9 +88,9 @@ class StudentController extends BaseController
                     "guardianContact" => $Guardian_No,
                     "image" => $Image
                 ];
-                array_push($std->output['students'], $student_item);
+                array_push($model->output['students'], $student_item);
             }
-            echo json_encode($std->output);
+            echo json_encode($model->output);
         }
     }
 
@@ -100,15 +101,15 @@ class StudentController extends BaseController
      */
     function paginateStudent(int $page = 1, int $from = 0, int $to = 5)
     {
-        $std = new Students($this->conn);
-        $results = $std->getWithPaginate($from, $to);
+        $model = new Students($this->conn);
+        $results = $model->getWithPaginate($from, $to);
         $results->execute();
         $num = $results->rowCount();
-        $std->output['message'] = "Students Records";
-        $std->output['count'] = $num;
-        $std->output['students'] = [];
-        $std->output['paging'] = [];
-        $total_row = $std->getTotalStudent();
+        $model->output['message'] = "Students Records";
+        $model->output['count'] = $num;
+        $model->output['students'] = [];
+        $model->output['paging'] = [];
+        $total_row = $model->getTotalStudent();
         if ($num > 0) {
             while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
@@ -148,12 +149,12 @@ class StudentController extends BaseController
                     "guardianContact" => $Guardian_No,
                     "image" => $Image
                 ];
-                array_push($std->output['students'], $student_item);
+                array_push($model->output['students'], $student_item);
             }
             $page_url = "/api/students/";
             $pagination = $this->getPaginate($page, $total_row, $to, $page_url);
-            $std->output['paging'] = $pagination;
-            echo json_encode($std->output);
+            $model->output['paging'] = $pagination;
+            echo json_encode($model->output);
         }
     }
 
@@ -162,13 +163,13 @@ class StudentController extends BaseController
      */
     function show($id)
     {
-        $std = new Students($this->conn);
-        $results = $std->getById($id);
+        $model = new Students($this->conn);
+        $results = $model->getById($id);
         $results->execute();
         $num = $results->rowCount();
-        $std->output['message'] = "Student Record";
-        $std->output['count'] = $num;
-        $std->output['students'] = array();
+        $model->output['message'] = "Student Record";
+        $model->output['count'] = $num;
+        $model->output['students'] = array();
         if ($num > 0) {
             while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
@@ -208,9 +209,9 @@ class StudentController extends BaseController
                     "guardianContact" => $Guardian_No,
                     "image" => $Image
                 ];
-                array_push($std->output['students'], $student_item);
+                array_push($model->output['students'], $student_item);
             }
-            echo json_encode($std->output);
+            echo json_encode($model->output);
         }
 
     }
@@ -225,11 +226,12 @@ class StudentController extends BaseController
         $results = $model->getStudentReport($table);
         $results->execute();
         $num = $results->rowCount();
+        $model->output['status'] = 200;
         $model->output['message'] = "Student Report";
         $model->output['count'] = $num;
         $model->output['report'] = [];
         if ($num == 0) {
-            echo json_encode($model->output);
+            $this->showNoDataMessage($model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -350,43 +352,45 @@ class StudentController extends BaseController
         }
     }
 
-    private function showNoDataMessage(Students $tch)
+    private function showNoDataMessage(Students $std)
     {
         http_response_code(404);
-        $tch->output['status'] = 404;
-        $tch->output['message'] = "No Data Available";
-        $tch->output['count'] = 0;
-        echo json_encode($tch->output);
+        $std->output['status'] = 404;
+        $std->output['message'] = "No Data Available";
+        $std->output['count'] = 0;
+        echo json_encode($std->output);
     }
 
-    function getMessages(){
+    function getMessages()
+    {
         $model = new Students($this->conn);
         $results = $model->getMessages();
         $results->execute();
         $num = $results->rowCount();
+        $model->output['status'] = 200;
         $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
         $model->output['count'] = $num;
         $model->output['messages'] = [];
-        if ($num == 0){
+        if ($num == 0) {
             $this->showNoDataMessage($model);
             return;
         }
 
-        while ($row = $results->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             /**
-             * @var string $Message_By
+             * @var string $Message_BY
              * @var string $Message_Level
              * @var string $M_Read
              * @var string $Message
              */
             $message_item = [
-                'sender' => $Message_By,
+                'sender' => $Message_BY,
                 'level' => $Message_Level,
                 'content' => $Message,
-                'status' => $M_Read
+                'read' => $M_Read
             ];
-            array_push($model->output['messages'],$message_item);
+            array_push($model->output['messages'], $message_item);
         }
         echo json_encode($model->output);
     }

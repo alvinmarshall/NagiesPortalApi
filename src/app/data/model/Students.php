@@ -113,12 +113,14 @@ class Students extends BaseModel implements IDataAccess
      */
     function getStudentReport($table): PDOStatement
     {
+        $student_no = Authentication::getDecodedData()['id'];
         $this->output['type'] = 'Reports';
         /** @noinspection SqlDialectInspection */
         $query = "SELECT 
                         id, Students_No, Students_Name,
-                        Teachers_Email, Report_File, Report_Date FROM ${table}";
+                        Teachers_Email, Report_File, Report_Date FROM ${table} WHERE Students_No = ?";
         $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $student_no);
         return $stmt;
     }
 
@@ -257,12 +259,15 @@ class Students extends BaseModel implements IDataAccess
      */
     function getAssignmentType($table, $format)
     {
+        $level = Authentication::getDecodedData()['level'];
+        echo $table;
         $this->output['type'] = 'Assignment' . $format;
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
                     id, Students_No, Students_Name,
-                    Teachers_Email, Report_File, Report_Date FROM " . $table;
+                    Teachers_Email, Report_File, Report_Date FROM  $table WHERE Students_No = ?";
         $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $level);
         return $stmt;
     }
 
