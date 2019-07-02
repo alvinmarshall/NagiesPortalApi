@@ -24,7 +24,6 @@ class Dispatcher
         if (Router::validateRoute(Router::getRoute($this->req->getParams()), $this->req->getRequestUri())) {
             $controller = Router::attachController($this->req->getModel());
             if ($controller == null) return;
-
             $actions = new Actions(
                 $this->req->getRequestUri(),
                 $this->req->getParams(),

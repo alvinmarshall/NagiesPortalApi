@@ -20,6 +20,7 @@ class Router
             "/api/students/assignment_pdf" => "StudentController@assignmentFormat",
             "/api/students/assignment_image" => "StudentController@assignmentFormat",
             "/api/students/messages" => "StudentController@getMessages",
+            "/api/students/profile" => "StudentController@getProfile",
 
 
             /**Users routes*/
@@ -33,8 +34,6 @@ class Router
             "/api/teachers/messages" => "TeacherController@getMessages",
             "/api/teachers/upload_assignment_pdf" => "TeacherController@sendAssignmentPDF",
             "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage"
-
-
         ];
 
     }
@@ -59,6 +58,7 @@ class Router
      */
     public static function attachController($path)
     {
+        if ($path == null) return null;
         $controller = [
             "students" => 'App\controller\StudentController',
             "users" => 'App\controller\UsersController',

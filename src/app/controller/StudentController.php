@@ -395,4 +395,56 @@ class StudentController extends BaseController
         echo json_encode($model->output);
     }
 
+    function getProfile()
+    {
+        $model = new Students($this->conn);
+        $results = $model->getStudentDetails();
+        $results->execute();
+        $num = $results->rowCount();
+        $model->output['status'] = 200;
+        $model->output['message'] = 'Student Profile';
+        $model->output['count'] = $num;
+        $model->output['studentProfile'] = [];
+        if ($num == 0) {
+            $this->showNoDataMessage($model);
+            return;
+        }
+
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            /**
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Dob
+             * @var string $Gender
+             * @var string $Admin_Date
+             * @var string $Section_Name
+             * @var string $Faculty_Name
+             * @var string $Level_Name
+             * @var string $Semester_Name
+             * @var string $Index_No
+             * @var string $Guardian_Name
+             * @var string $Guardian_No
+             * @var string $Image
+             */
+            extract($row);
+            $profile_item = [
+                "studentNo" => $Students_No,
+                "studentName" => $Students_Name,
+                "dob" => $Dob,
+                "gender" => $Gender,
+                "admissionDate" => $Admin_Date,
+                "section" => $Section_Name,
+                "faculty" => $Faculty_Name,
+                "level" => $Level_Name,
+                "semester" => $Semester_Name,
+                "index" => $Index_No,
+                "guardian" => $Guardian_Name,
+                "contact" => $Guardian_No,
+                "imageUrl" => $Image
+            ];
+            array_push($model->output['studentProfile'], $profile_item);
+        }
+        echo json_encode($model->output);
+    }
+
 }

@@ -48,6 +48,10 @@ class Request
 
     public function getRequestUri()
     {
+        if ($this->uri == '/' || $this->uri=='/api'|| $this->uri=='/api/'){
+            $port = $_SERVER['SERVER_PORT'];
+            echo "Server Running on port $port";
+        }
         return $this->uri;
     }
 

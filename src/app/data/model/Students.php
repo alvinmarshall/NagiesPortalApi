@@ -76,6 +76,16 @@ class Students extends BaseModel implements IDataAccess
         // TODO: Implement delete() method.
     }
 
+    function getStudentDetails()
+    {
+        $this->output['type'] = 'StudentProfile';
+        $student_no = Authentication::getDecodedData()['id'];
+        $query = "SELECT * FROM $this->dbTable WHERE Students_No = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $student_no);
+        return $stmt;
+    }
+
     /**
      * @param array $complaintData
      * @return bool
