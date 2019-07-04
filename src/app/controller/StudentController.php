@@ -24,10 +24,12 @@ class StudentController extends BaseController
             'content' => $data->content ?? null
         ];
         if ($model->sendComplaints($complaint_data)) {
+            $model->output['status'] = 200;
             $model->output['id'] = $model->id;
             $model->output['errors'] = $model->error;
             echo json_encode($model->output);
         } else {
+            $model->output['status'] = 400;
             $model->output['errors'] = $model->error;
             echo json_encode($model->output);
         }
