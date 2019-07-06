@@ -21,19 +21,15 @@ class StudentController extends BaseController
         if (!isset($data)) return;
         $model = new Students($this->conn);
         $complaint_data = [
-            'sender' => $data->sender ?? null,
-            'name' => $data->name ?? null,
-            'content' => $data->content ?? null,
-            'level' => $data->level ?? null,
-            'date' => $data->date ?? null,
-            'guardian' => $data->guardian ?? null,
-            'contact' => $data->contact ?? null
+            'content' => $data->content ?? null
         ];
         if ($model->sendComplaints($complaint_data)) {
+            $model->output['status'] = 200;
             $model->output['id'] = $model->id;
             $model->output['errors'] = $model->error;
             echo json_encode($model->output);
         } else {
+            $model->output['status'] = 400;
             $model->output['errors'] = $model->error;
             echo json_encode($model->output);
         }

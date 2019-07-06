@@ -92,6 +92,9 @@ class Students extends BaseModel implements IDataAccess
      */
     function sendComplaints(array $complaintData)
     {
+        $data = $this->getStudentInfo()[0];
+        if ($data == null) return false;
+        $date = date('Y-m-d');
         $this->output['type'] = 'Complaints';
         /** @noinspection SqlDialectInspection */
         $query = "INSERT INTO complaints
@@ -102,19 +105,58 @@ class Students extends BaseModel implements IDataAccess
                             Level_Name = :level,
                             Message_Date = :date,
                             Guardian_Name = :guardian,
-                            Guardian_No = :contact
+                            Guardian_No = :contact,
+                            Teachers_Name = :teacher
                         ";
         $this->error = [];
         $stmt = $this->dbConn->prepare($query);
-        $field = ['sender', 'name', 'content', 'level', 'date', 'guardian', 'contact'];
-        $input = [$complaintData['sender'], $complaintData['name'], $complaintData['content'],
-            $complaintData['level'], $complaintData['date'], $complaintData['guardian'], $complaintData['contact']];
+        $field = ['sender', 'name', 'content', 'level', 'date', 'guardian', 'contact', 'teacher'];
+        $input = [$data['sender'], $data['name'], $complaintData['content'],
+            $data['level'], $date, $data['guardian'], $data['contact'], $data['teacher']];
 
         $isInputValid = $this->validateInput($field, $input);
         if ($isInputValid) {
             return $this->prepareToInsertData($stmt, $input, $field);
         }
         return false;
+    }
+
+    private function getStudentInfo()
+    {
+        $id = Authentication::getDecodedData()['id'] ?? '';
+        $level = Authentication::getDecodedData()['level'] ?? '';
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT 
+                        s.Guardian_Name,s.Guardian_No,t.Teachers_Name,s.Students_Name 
+                    FROM  student s,teachers t  WHERE Students_No = ? AND  t.Level_Name = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $id);
+        $stmt->bindParam(2, $level);
+        $stmt->execute();
+        $num = $stmt->rowCount();
+        $item = [];
+        if ($num > 0) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                /**
+                 * @var string $Teachers_Name
+                 * @var string $Guardian_No
+                 * @var string $Guardian_Name
+                 * @var string $Students_Name
+                 */
+                $item_data = [
+                    "teacher" => $Teachers_Name,
+                    "guardian" => $Guardian_Name,
+                    "contact" => $Guardian_No,
+                    "level" => $level,
+                    "sender" => $id,
+                    "name" => $Students_Name
+                ];
+                array_push($item, $item_data);
+            }
+            return $item;
+        }
+        return null;
     }
 
     /**

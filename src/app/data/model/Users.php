@@ -65,19 +65,21 @@ class Users extends BaseModel
 
     /**
      * @param $username
+     * @param $password
      * @param $userType
      * @return bool
      */
-    function verifyParentUsername($username, $userType):bool
+    function verifyParentUsername($username,$password, $userType):bool
     {
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
                     Students_No, Level_Name, Index_No, Password, Image  
-                    FROM " . $userType . " WHERE Index_No = :username LIMIT 1";
+                    FROM " . $userType . " WHERE Index_No = ? AND Password = ? LIMIT 1";
 
         self::$user_name = Validator::singleInput($username);
         $stmt = $this->dbConn->prepare($query);
-        $stmt->execute([':username' => self::$user_name]);
+        $stmt->bindParam(1,$username);
+        $stmt->bindParam(2,$password);
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

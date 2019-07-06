@@ -55,7 +55,7 @@ class UsersController extends BaseController
         $check_username = null;
         switch ($userType) {
             case 'parent':
-                $check_username = $usr->verifyParentUsername($username, 'student');
+                $check_username = $usr->verifyParentUsername($username,$password, 'student');
                 $this->prepareToAuthenticate($check_username, $password, $usr);
                 break;
 

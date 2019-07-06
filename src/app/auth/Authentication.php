@@ -3,7 +3,7 @@
 
 namespace App\auth;
 define('iat', time());
-define('nbf', iat + 10);
+define('nbf', iat );
 define('exp', nbf + 86400); // since 24 hours = 86,400 seconds
 use Exception;
 use Firebase\JWT\JWT;
