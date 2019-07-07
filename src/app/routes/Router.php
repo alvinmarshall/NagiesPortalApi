@@ -21,6 +21,7 @@ class Router
             "/api/students/assignment_image" => "StudentController@assignmentFormat",
             "/api/students/messages" => "StudentController@getMessages",
             "/api/students/profile" => "StudentController@getProfile",
+            "/api/students/download" => "StudentController@getFile",
 
 
             /**Users routes*/

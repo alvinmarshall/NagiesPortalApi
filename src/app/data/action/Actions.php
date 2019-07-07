@@ -202,6 +202,13 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+                case "/api/students/download":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->getFile(self::$data);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }

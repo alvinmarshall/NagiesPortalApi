@@ -4,6 +4,7 @@
 namespace App\controller;
 
 
+use App\common\utils\FileExtensionUtils;
 use App\common\utils\PageUtils;
 use App\data\model\Students;
 use PDO;
@@ -441,6 +442,24 @@ class StudentController extends BaseController
             array_push($model->output['studentProfile'], $profile_item);
         }
         echo json_encode($model->output);
+    }
+
+    function getFile($input)
+    {
+        $url = $input->fileUrl ?? '';
+        if ($url == null) {
+            http_response_code(400);
+            return;
+        }
+        $path = $url;
+        $content_type = FileExtensionUtils::getContentType($path);
+        if ($content_type == null) return;
+        header('Content-Disposition: attachment; filename=' . basename($path));
+        header('Content-Transfer-Encoding: binary');
+        header('Accept-Ranges: bytes');
+        header('Content-Encoding: none');
+        header("Content-Type: $content_type");
+        readfile($path);
     }
 
 }

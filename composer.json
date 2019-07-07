@@ -9,7 +9,8 @@
     "ext-pdo": "*",
     "ext-apache": "*",
     "ext-json": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-curl": "*"
   },
   "require-dev": {
   }
