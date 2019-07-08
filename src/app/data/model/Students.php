@@ -312,11 +312,10 @@ class Students extends BaseModel implements IDataAccess
     function getAssignmentType($table, $format)
     {
         $level = Authentication::getDecodedData()['level'];
-        echo $table;
         $this->output['type'] = 'Assignment' . $format;
         /** @noinspection SqlDialectInspection */
         $query = "SELECT
-                    id, Students_No, Students_Name,
+                    Students_Name,
                     Teachers_Email, Report_File, Report_Date FROM  $table WHERE Students_No = ?";
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $level);

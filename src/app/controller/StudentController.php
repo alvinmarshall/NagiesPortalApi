@@ -318,7 +318,7 @@ class StudentController extends BaseController
         $model->output['status'] = 200;
         $model->output['message'] = 'Available Assignment ' . $format;
         $model->output['count'] = $num;
-        $model->output['Assignment' . $format] = [];
+        $model->output['Assignment'] = [];
 
         if ($num == 0) {
             $this->showNoDataMessage($model);
@@ -328,22 +328,18 @@ class StudentController extends BaseController
             while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
                 /**
-                 * @var string $id
-                 * @var string $Students_No
                  * @var string $Students_Name
                  * @var string $Report_File
                  * @var string $Report_Date
                  * @var string $Teachers_Email
                  **/
                 $assigment_items = [
-                    "id" => $id,
-                    "studentNo" => $Students_No,
                     "studentName" => $Students_Name,
                     "teacherEmail" => $Teachers_Email,
                     "reportFile" => $Report_File,
                     "reportDate" => $Report_Date
                 ];
-                array_push($model->output['Assignment' . $format], $assigment_items);
+                array_push($model->output['Assignment'], $assigment_items);
             }
             echo json_encode($model->output);
         }
