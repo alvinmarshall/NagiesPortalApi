@@ -259,13 +259,15 @@ class Actions
     private function showBadRequestMessage()
     {
         http_response_code(405);
-        echo json_encode(array("status" => 405));
+        echo json_encode(array("status" => 405, "message" => "Use appropriate method for this action"));
     }
 
     private function showNotAuthenticatedMessage()
     {
         http_response_code(401);
-        echo json_encode(array("status" => 401, "message" => "You're not authorised for this action",
-            "error" => Authentication::$error));
+        echo json_encode(
+            array("status" => 401,
+                "message" => "You're not authorised for this action",
+                "error" => Authentication::$error));
     }
 }

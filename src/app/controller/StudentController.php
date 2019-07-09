@@ -7,6 +7,7 @@ namespace App\controller;
 use App\common\utils\FileExtensionUtils;
 use App\common\utils\PageUtils;
 use App\data\model\Students;
+use App\resource\StudentResource;
 use PDO;
 use PDOStatement;
 
@@ -25,14 +26,11 @@ class StudentController extends BaseController
             'content' => $data->content ?? null
         ];
         if ($model->sendComplaints($complaint_data)) {
-            $model->output['status'] = 200;
             $model->output['id'] = $model->id;
             $model->output['errors'] = $model->error;
-            echo json_encode($model->output);
+            StudentResource::showData($model);
         } else {
-            $model->output['status'] = 400;
-            $model->output['errors'] = $model->error;
-            echo json_encode($model->output);
+            StudentResource::showBadRequest($model);
         }
     }
 
@@ -42,53 +40,54 @@ class StudentController extends BaseController
         $results = $model->get();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['status'] = 200;
         $model->output['message'] = "Students Records";
         $model->output['count'] = $num;
         $model->output['students'] = [];
-        if ($num > 0) {
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                /**
-                 * @var number
-                 * @var string $id
-                 * @var string $Students_No
-                 * @var string $Students_Name
-                 * @var string $Dob
-                 * @var string $Gender
-                 * @var string $dob
-                 * @var string $Age
-                 * @var string $Section_Name
-                 * @var string $Faculty_Name
-                 * @var string $Semester_Name
-                 * @var string $Guardian_Name
-                 * @var string $Guardian_No
-                 * @var string $Admin_Date
-                 * @var string $Image
-                 * @var string $Index_No
-                 * @var string $Level_Name
-                 */
-                $student_item = [
-                    "id" => $id,
-                    "refNo" => $Students_No,
-                    "name" => $Students_Name,
-                    "indexNo" => $Index_No,
-                    "dob" => $Dob,
-                    "gender" => $Gender,
-                    "admissionDate" => $Admin_Date,
-                    "age" => $Age,
-                    "sectionName" => $Section_Name,
-                    "facultyName" => $Faculty_Name,
-                    "semester" => $Semester_Name,
-                    "level" => $Level_Name,
-                    "guardianName" => $Guardian_Name,
-                    "guardianContact" => $Guardian_No,
-                    "image" => $Image
-                ];
-                array_push($model->output['students'], $student_item);
-            }
-            echo json_encode($model->output);
+        if ($num == 0) {
+            StudentResource::showNoData($model);
+            return;
         }
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var number
+             * @var string $id
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Dob
+             * @var string $Gender
+             * @var string $dob
+             * @var string $Age
+             * @var string $Section_Name
+             * @var string $Faculty_Name
+             * @var string $Semester_Name
+             * @var string $Guardian_Name
+             * @var string $Guardian_No
+             * @var string $Admin_Date
+             * @var string $Image
+             * @var string $Index_No
+             * @var string $Level_Name
+             */
+            $student_item = [
+                "id" => $id,
+                "refNo" => $Students_No,
+                "name" => $Students_Name,
+                "indexNo" => $Index_No,
+                "dob" => $Dob,
+                "gender" => $Gender,
+                "admissionDate" => $Admin_Date,
+                "age" => $Age,
+                "sectionName" => $Section_Name,
+                "facultyName" => $Faculty_Name,
+                "semester" => $Semester_Name,
+                "level" => $Level_Name,
+                "guardianName" => $Guardian_Name,
+                "guardianContact" => $Guardian_No,
+                "image" => $Image
+            ];
+            array_push($model->output['students'], $student_item);
+        }
+        StudentResource::showData($model);
     }
 
     /**
@@ -107,52 +106,54 @@ class StudentController extends BaseController
         $model->output['students'] = [];
         $model->output['paging'] = [];
         $total_row = $model->getTotalStudent();
-        if ($num > 0) {
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                /**
-                 * @var number
-                 * @var string $id
-                 * @var string $Students_No
-                 * @var string $Students_Name
-                 * @var string $Dob
-                 * @var string $Gender
-                 * @var string $dob
-                 * @var string $Age
-                 * @var string $Section_Name
-                 * @var string $Faculty_Name
-                 * @var string $Semester_Name
-                 * @var string $Guardian_Name
-                 * @var string $Guardian_No
-                 * @var string $Admin_Date
-                 * @var string $Image
-                 * @var string $Index_No
-                 * @var string $Level_Name
-                 */
-                $student_item = [
-                    "id" => $id,
-                    "refNo" => $Students_No,
-                    "name" => $Students_Name,
-                    "indexNo" => $Index_No,
-                    "dob" => $Dob,
-                    "gender" => $Gender,
-                    "admissionDate" => $Admin_Date,
-                    "age" => $Age,
-                    "sectionName" => $Section_Name,
-                    "facultyName" => $Faculty_Name,
-                    "semester" => $Semester_Name,
-                    "level" => $Level_Name,
-                    "guardianName" => $Guardian_Name,
-                    "guardianContact" => $Guardian_No,
-                    "image" => $Image
-                ];
-                array_push($model->output['students'], $student_item);
-            }
-            $page_url = "/api/students/";
-            $pagination = $this->getPaginate($page, $total_row, $to, $page_url);
-            $model->output['paging'] = $pagination;
-            echo json_encode($model->output);
+        if ($num == 0) {
+            StudentResource::showNoData($model);
+            return;
         }
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var number
+             * @var string $id
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Dob
+             * @var string $Gender
+             * @var string $dob
+             * @var string $Age
+             * @var string $Section_Name
+             * @var string $Faculty_Name
+             * @var string $Semester_Name
+             * @var string $Guardian_Name
+             * @var string $Guardian_No
+             * @var string $Admin_Date
+             * @var string $Image
+             * @var string $Index_No
+             * @var string $Level_Name
+             */
+            $student_item = [
+                "id" => $id,
+                "refNo" => $Students_No,
+                "name" => $Students_Name,
+                "indexNo" => $Index_No,
+                "dob" => $Dob,
+                "gender" => $Gender,
+                "admissionDate" => $Admin_Date,
+                "age" => $Age,
+                "sectionName" => $Section_Name,
+                "facultyName" => $Faculty_Name,
+                "semester" => $Semester_Name,
+                "level" => $Level_Name,
+                "guardianName" => $Guardian_Name,
+                "guardianContact" => $Guardian_No,
+                "image" => $Image
+            ];
+            array_push($model->output['students'], $student_item);
+        }
+        $page_url = "/api/students/";
+        $pagination = $this->getPaginate($page, $total_row, $to, $page_url);
+        $model->output['paging'] = $pagination;
+        StudentResource::showData($model);
     }
 
     /**
@@ -167,50 +168,51 @@ class StudentController extends BaseController
         $model->output['message'] = "Student Record";
         $model->output['count'] = $num;
         $model->output['students'] = array();
-        if ($num > 0) {
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                /**
-                 * @var number
-                 * @var string $id
-                 * @var string $Students_No
-                 * @var string $Students_Name
-                 * @var string $Dob
-                 * @var string $Gender
-                 * @var string $dob
-                 * @var string $Age
-                 * @var string $Section_Name
-                 * @var string $Faculty_Name
-                 * @var string $Semester_Name
-                 * @var string $Guardian_Name
-                 * @var string $Guardian_No
-                 * @var string $Admin_Date
-                 * @var string $Image
-                 * @var string $Index_No
-                 * @var string $Level_Name
-                 */
-                $student_item = [
-                    "id" => $id,
-                    "refNo" => $Students_No,
-                    "name" => $Students_Name,
-                    "indexNo" => $Index_No,
-                    "dob" => $Dob,
-                    "gender" => $Gender,
-                    "admissionDate" => $Admin_Date,
-                    "age" => $Age,
-                    "sectionName" => $Section_Name,
-                    "facultyName" => $Faculty_Name,
-                    "semester" => $Semester_Name,
-                    "level" => $Level_Name,
-                    "guardianName" => $Guardian_Name,
-                    "guardianContact" => $Guardian_No,
-                    "image" => $Image
-                ];
-                array_push($model->output['students'], $student_item);
-            }
-            echo json_encode($model->output);
+        if ($num == 0) {
+            StudentResource::showNoData($model);
+            return;
         }
-
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var number
+             * @var string $id
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Dob
+             * @var string $Gender
+             * @var string $dob
+             * @var string $Age
+             * @var string $Section_Name
+             * @var string $Faculty_Name
+             * @var string $Semester_Name
+             * @var string $Guardian_Name
+             * @var string $Guardian_No
+             * @var string $Admin_Date
+             * @var string $Image
+             * @var string $Index_No
+             * @var string $Level_Name
+             */
+            $student_item = [
+                "id" => $id,
+                "refNo" => $Students_No,
+                "name" => $Students_Name,
+                "indexNo" => $Index_No,
+                "dob" => $Dob,
+                "gender" => $Gender,
+                "admissionDate" => $Admin_Date,
+                "age" => $Age,
+                "sectionName" => $Section_Name,
+                "facultyName" => $Faculty_Name,
+                "semester" => $Semester_Name,
+                "level" => $Level_Name,
+                "guardianName" => $Guardian_Name,
+                "guardianContact" => $Guardian_No,
+                "image" => $Image
+            ];
+            array_push($model->output['students'], $student_item);
+        }
+        StudentResource::showData($model);
     }
 
     /**
@@ -228,7 +230,7 @@ class StudentController extends BaseController
         $model->output['count'] = $num;
         $model->output['report'] = [];
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            StudentResource::showNoData($model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -250,8 +252,7 @@ class StudentController extends BaseController
             ];
             array_push($model->output['report'], $result_item);
         }
-        echo json_encode($model->output);
-
+        StudentResource::showData($model);
     }
 
     /**
@@ -274,7 +275,6 @@ class StudentController extends BaseController
             default:
                 null;
         }
-
     }
 
     function create()
@@ -314,44 +314,31 @@ class StudentController extends BaseController
     {
         $results->execute();
         $num = $results->rowCount();
-
-        $model->output['status'] = 200;
         $model->output['message'] = 'Available Assignment ' . $format;
         $model->output['count'] = $num;
         $model->output['Assignment'] = [];
 
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            StudentResource::showNoData($model);
             return;
         }
-        if ($num > 0) {
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                /**
-                 * @var string $Students_Name
-                 * @var string $Report_File
-                 * @var string $Report_Date
-                 * @var string $Teachers_Email
-                 **/
-                $assigment_items = [
-                    "studentName" => $Students_Name,
-                    "teacherEmail" => $Teachers_Email,
-                    "reportFile" => $Report_File,
-                    "reportDate" => $Report_Date
-                ];
-                array_push($model->output['Assignment'], $assigment_items);
-            }
-            echo json_encode($model->output);
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $Students_Name
+             * @var string $Report_File
+             * @var string $Report_Date
+             * @var string $Teachers_Email
+             **/
+            $assigment_items = [
+                "studentName" => $Students_Name,
+                "teacherEmail" => $Teachers_Email,
+                "reportFile" => $Report_File,
+                "reportDate" => $Report_Date
+            ];
+            array_push($model->output['Assignment'], $assigment_items);
         }
-    }
-
-    private function showNoDataMessage(Students $std)
-    {
-        http_response_code(404);
-        $std->output['status'] = 404;
-        $std->output['message'] = "No Data Available";
-        $std->output['count'] = 0;
-        echo json_encode($std->output);
+        StudentResource::showData($model);
     }
 
     function getMessages()
@@ -360,15 +347,13 @@ class StudentController extends BaseController
         $results = $model->getMessages();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['status'] = 200;
         $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
         $model->output['count'] = $num;
         $model->output['messages'] = [];
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            StudentResource::showNoData($model);
             return;
         }
-
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             /**
@@ -385,7 +370,7 @@ class StudentController extends BaseController
             ];
             array_push($model->output['messages'], $message_item);
         }
-        echo json_encode($model->output);
+        StudentResource::showData($model);
     }
 
     function getProfile()
@@ -394,15 +379,13 @@ class StudentController extends BaseController
         $results = $model->getStudentDetails();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['status'] = 200;
         $model->output['message'] = 'Student Profile';
         $model->output['count'] = $num;
         $model->output['studentProfile'] = [];
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            StudentResource::showNoData($model);
             return;
         }
-
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             /**
              * @var string $Students_No
@@ -437,9 +420,12 @@ class StudentController extends BaseController
             ];
             array_push($model->output['studentProfile'], $profile_item);
         }
-        echo json_encode($model->output);
+        StudentResource::showData($model);
     }
 
+    /**
+     * @param $input
+     */
     function getFile($input)
     {
         $url = $input->fileUrl ?? '';

@@ -6,6 +6,7 @@ namespace App\controller;
 
 use App\common\utils\DirectoryUtils;
 use App\data\model\Teachers;
+use App\resource\TeacherResource;
 use PDO;
 use PDOStatement;
 
@@ -59,7 +60,6 @@ class TeacherController extends BaseController
         } else {
             echo json_encode(array('message' => 'No file to upload'));
         }
-
     }
 
     function getMessages()
@@ -72,7 +72,7 @@ class TeacherController extends BaseController
         $model->output['count'] = $num;
         $model->output['messages'] = [];
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            TeacherResource::showNoData($model);
             return;
         }
 
@@ -92,7 +92,7 @@ class TeacherController extends BaseController
             ];
             array_push($model->output['messages'], $message_item);
         }
-        echo json_encode($model->output);
+        TeacherResource::showData($model);
     }
 
     /**
@@ -115,7 +115,6 @@ class TeacherController extends BaseController
             default:
                 null;
         }
-
     }
 
     function getComplaints()
@@ -128,7 +127,7 @@ class TeacherController extends BaseController
         $model->output['count'] = $num;
         $model->output['complaints'] = [];
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            TeacherResource::showNoData($model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -155,16 +154,7 @@ class TeacherController extends BaseController
             ];
             array_push($model->output['complaints'], $complaint_item);
         }
-        echo json_encode($model->output);
-    }
-
-    private function showNoDataMessage(Teachers $tch)
-    {
-        http_response_code(404);
-        $tch->output['status'] = 404;
-        $tch->output['message'] = "No Data Available";
-        $tch->output['count'] = 0;
-        echo json_encode($tch->output);
+        TeacherResource::showData($model);
     }
 
     private function getAssignment($format, PDOStatement $results, Teachers $model)
@@ -178,32 +168,30 @@ class TeacherController extends BaseController
         $model->output['Assignment' . $format] = [];
 
         if ($num == 0) {
-            $this->showNoDataMessage($model);
+            TeacherResource::showNoData($model);
             return;
         }
-        if ($num > 0) {
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                /**
-                 * @var string $id
-                 * @var string $Students_No
-                 * @var string $Students_Name
-                 * @var string $Report_File
-                 * @var string $Report_Date
-                 * @var string $Teachers_Email
-                 **/
-                $assigment_items = [
-                    "id" => $id,
-                    "studentNo" => $Students_No,
-                    "studentName" => $Students_Name,
-                    "teacherEmail" => $Teachers_Email,
-                    "reportFile" => $Report_File,
-                    "reportDate" => $Report_Date
-                ];
-                array_push($model->output['Assignment' . $format], $assigment_items);
-            }
-            echo json_encode($model->output);
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $id
+             * @var string $Students_No
+             * @var string $Students_Name
+             * @var string $Report_File
+             * @var string $Report_Date
+             * @var string $Teachers_Email
+             **/
+            $assigment_items = [
+                "id" => $id,
+                "studentNo" => $Students_No,
+                "studentName" => $Students_Name,
+                "teacherEmail" => $Teachers_Email,
+                "reportFile" => $Report_File,
+                "reportDate" => $Report_Date
+            ];
+            array_push($model->output['Assignment' . $format], $assigment_items);
         }
+        TeacherResource::showData($model);
     }
 
     /**
@@ -213,7 +201,10 @@ class TeacherController extends BaseController
      * @param $file_name
      * @param $extension
      */
-    private function prepareToUploadFile(string $format, string $destination, string $upload_dir, $file_name, $extension): void
+    private function prepareToUploadFile(
+        string $format, string $destination,
+        string $upload_dir, $file_name, $extension
+    ): void
     {
         if (move_uploaded_file($_FILES[$format]['tmp_name'], $destination)) {
             $model = new Teachers($this->conn);
@@ -226,11 +217,8 @@ class TeacherController extends BaseController
                 $model->output['errors'] = $model->error;
                 echo json_encode($model->output);
             }
-
         } else {
             echo json_encode(array('message' => 'attempting to upload file failed'));
         }
     }
-
-
 }
