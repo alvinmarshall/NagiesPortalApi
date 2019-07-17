@@ -5,6 +5,8 @@ namespace App\data\action;
 
 
 use App\auth\Authentication;
+use App\common\AppConstant;
+
 
 class Actions
 {
@@ -61,14 +63,14 @@ class Actions
                     break;
                 case  "/api/teachers/assignment_pdf":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->assignmentFormat('pdf');
+                        $this->controller->assignmentFormat(AppConstant::FORMAT_PDF);
                         return;
                     }
                     $this->showBadRequestMessage();
                     break;
                 case  "/api/teachers/assignment_image":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->assignmentFormat('jpeg');
+                        $this->controller->assignmentFormat(AppConstant::FORMAT_IMAGE);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -89,7 +91,7 @@ class Actions
                     break;
                 case  "/api/teachers/upload_assignment_pdf":
                     if ($this->requestMethod == 'POST') {
-                        $this->controller->sendAssignment();
+                        $this->controller->uploadFile(AppConstant::TABLE_ASSIGNMENT_PDF);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -97,7 +99,23 @@ class Actions
 
                 case  "/api/teachers/upload_assignment_image":
                     if ($this->requestMethod == 'POST') {
-                        $this->controller->sendAssignment();
+                        $this->controller->uploadFile(AppConstant::TABLE_ASSIGNMENT_IMAGE);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case  "/api/teachers/upload_report_pdf":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->uploadFile(AppConstant::TABLE_REPORT_PDF);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case  "/api/teachers/upload_report_image":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->uploadFile(AppConstant::TABLE_REPORT_IMAGE);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -155,14 +173,14 @@ class Actions
                     break;
                 case "/api/students/report_pdf":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->getReport('pdf');
+                        $this->controller->getReport(AppConstant::FORMAT_PDF);
                         return;
                     }
                     $this->showBadRequestMessage();
                     break;
                 case "/api/students/report_image":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->getReport('jpeg');
+                        $this->controller->getReport(AppConstant::FORMAT_IMAGE);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -176,14 +194,14 @@ class Actions
                     break;
                 case  "/api/students/assignment_pdf":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->assignmentFormat('pdf');
+                        $this->controller->assignmentFormat(AppConstant::FORMAT_PDF);
                         return;
                     }
                     $this->showBadRequestMessage();
                     break;
                 case  "/api/students/assignment_image":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->assignmentFormat('jpeg');
+                        $this->controller->assignmentFormat(AppConstant::FORMAT_IMAGE);
                         return;
                     }
                     $this->showBadRequestMessage();

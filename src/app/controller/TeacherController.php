@@ -38,16 +38,16 @@ class TeacherController extends BaseController
         // TODO: Implement delete() method.
     }
 
-    function sendAssignment()
+    function uploadFile(string $dbTable)
     {
         $upload_dir = './students/uploads/';
-        if (isset($_FILES['pdf']['name'])) {
+        if (isset($_FILES['pdf']['name']) ) {
             DirectoryUtils::createDir($upload_dir);
             $file_info = pathinfo($_FILES['pdf']['name']);
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
             $destination = $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension);
+            $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension,$dbTable);
 
         } elseif (isset($_FILES['image']['name'])) {
             DirectoryUtils::createDir($upload_dir);
@@ -55,7 +55,7 @@ class TeacherController extends BaseController
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
             $destination = $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension);
+            $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension,$dbTable);
 
         } else {
             echo json_encode(array('message' => 'No file to upload'));
@@ -200,16 +200,17 @@ class TeacherController extends BaseController
      * @param string $upload_dir
      * @param $file_name
      * @param $extension
+     * @param string $dbTable
      */
     private function prepareToUploadFile(
         string $format, string $destination,
-        string $upload_dir, $file_name, $extension
+        string $upload_dir, $file_name, $extension,string $dbTable
     ): void
     {
         if (move_uploaded_file($_FILES[$format]['tmp_name'], $destination)) {
             $model = new Teachers($this->conn);
             $location = $upload_dir . $file_name . '.' . $extension;
-            if ($model->sendAssignment($format, $location)) {
+            if ($model->saveUploadFilePath($format, $location,$dbTable)) {
                 $model->output['id'] = $model->id;
                 $model->output['errors'] = $model->error;
                 echo json_encode($model->output);

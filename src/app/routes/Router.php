@@ -34,7 +34,11 @@ class Router
             "/api/teachers/complaints" => "TeacherController@getComplaints",
             "/api/teachers/messages" => "TeacherController@getMessages",
             "/api/teachers/upload_assignment_pdf" => "TeacherController@sendAssignmentPDF",
-            "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage"
+            "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage",
+            "/api/teachers/upload_report_pdf" => "TeacherController@sendReportPDF",
+            "/api/teachers/upload_report_image" => "TeacherController@sendReportImage"
+
+
         ];
 
     }
