@@ -225,7 +225,6 @@ class StudentController extends BaseController
         $results = $model->getStudentReport($table);
         $results->execute();
         $num = $results->rowCount();
-        $model->output['status'] = 200;
         $model->output['message'] = "Student Report";
         $model->output['count'] = $num;
         $model->output['report'] = [];
@@ -237,13 +236,11 @@ class StudentController extends BaseController
             extract($row);
             /**
              * @var string $Students_Name
-             * @var string $Students_No
              * @var string $Teachers_Email
              * @var string $Report_Date
              * @var string $Report_File
              */
             $result_item = [
-                'studentNo' => $Students_No,
                 'studentName' => $Students_Name,
                 'teacherEmail' => $Teachers_Email,
                 'fileUrl' => $Report_File,
@@ -333,8 +330,9 @@ class StudentController extends BaseController
             $assigment_items = [
                 "studentName" => $Students_Name,
                 "teacherEmail" => $Teachers_Email,
-                "reportFile" => $Report_File,
-                "reportDate" => $Report_Date
+                'fileUrl' => $Report_File,
+                'format'  => strtolower($format),
+                'date'  => $Report_Date
             ];
             array_push($model->output['Assignment'], $assigment_items);
         }
