@@ -97,31 +97,48 @@ class Teachers extends BaseModel implements IDataAccess
     /**
      * @param $format
      * @param $destination
+     * @param $dbTable
      * @return bool
      */
-    function sendAssignment($format, $destination): bool
+    function saveUploadFilePath($format, $destination,$dbTable): bool
     {
-        $this->output['type'] = 'Assignment' . strtoupper($format);
-        $table = $format == 'pdf' ? 'assignment' : 'assignment_image';
+        $this->output['type'] = strtoupper($format);
+        $table = $dbTable;
         $level = Authentication::getDecodedData()['level'] ?? null;
         $date = date('Y-m-d');
         $name = Authentication::getDecodedData()['username'] ?? null;
+        $email = Authentication::getDecodedData()['username'] ?? null;
+        if ($dbTable == 'report' || $dbTable == 'report_png'){
+            if (isset($_POST['students_no'])  && isset($_POST['students_name'])){
+                $level = $_POST['students_no'];
+                $name = $_POST['students_name'];
+            }else{
+                $level = null;
+                $name = null;
+                $this->error['field'] = 'provide student report information fields';
+                return false;
+            }
+
+        }
 
         /** @noinspection SqlDialectInspection */
         $query = "INSERT INTO ${table}
                         SET 
-                            Students_No = :number,
+                            Students_No = :index,
                             Students_Name = :name,
                             Teachers_Email = :email,
                             Report_File = :destination,
                             Report_Date = :date
                         ";
         $stmt = $this->dbConn->prepare($query);
-        $field = ['number', 'name', 'email', 'destination', 'date'];
-        $input = [$level, $name, $level, $destination, $date];
+        $field = ['index', 'name', 'email', 'destination', 'date'];
+        $input = [$level, $name, $email, $destination, $date];
         $this->output['message'] = 'File upload successful';
         $this->output['format'] = $format;
-        return $this->prepareToInsertData($stmt, $input, $field);
+        if ($this->validateInput($field,$input)){
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return false;
     }
 
     private function bindAllParams(PDOStatement $stmt, $params, $fields)
@@ -144,6 +161,27 @@ class Teachers extends BaseModel implements IDataAccess
             $this->error['mysql'] = $e->getMessage();
             return false;
         }
+    }
+
+    /**
+     * @param $fields
+     * @param $inputs
+     * @return bool
+     */
+    private function validateInput($fields, $inputs): bool
+    {
+        foreach ($inputs as $input => $data) {
+            if (empty($data)) {
+                $this->output['message'] = "fields not set";
+                $this->error[$fields[$input]] = "can't be empty";
+            }
+        }
+        if (array_count_values($this->error)) {
+            http_response_code(400);
+            $this->output['status'] = 400;
+            return false;
+        }
+        return true;
     }
 
 }

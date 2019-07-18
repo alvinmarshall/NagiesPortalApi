@@ -169,7 +169,7 @@ class Students extends BaseModel implements IDataAccess
         $this->output['type'] = 'Reports';
         /** @noinspection SqlDialectInspection */
         $query = "SELECT 
-                        id, Students_No, Students_Name,
+                        Students_Name,
                         Teachers_Email, Report_File, Report_Date FROM ${table} WHERE Students_No = ?";
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $student_no);
