@@ -40,7 +40,7 @@ class Router
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
 
             //firebase route
-//           "/api/users/messaging" => "UsersController@sendMessage"
+           "/api/users/messaging" => "UsersController@sendMessage"
 
 
 

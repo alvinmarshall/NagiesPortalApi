@@ -286,18 +286,18 @@ class Actions
                 $this->showBadRequestMessage();
                 break;
 
-//            case "/api/users/messaging":
-//                if ($this->requestMethod == 'POST') {
-//                    $message_data = array(
-//                        "device" => self::$data->deviceId ?? null,
-//                        "title" => self::$data->title ?? null,
-//                        "message" => self::$data->content ?? null
-//                    );
-//                    $this->controller->sendMessage($message_data);
-//                    return;
-//                }
-//                $this->showBadRequestMessage();
-//                break;
+            case "/api/users/messaging":
+                if ($this->requestMethod == 'POST') {
+                    $message_data = array(
+                        "device" => self::$data->deviceId ?? null,
+                        "title" => self::$data->title ?? null,
+                        "message" => self::$data->content ?? null
+                    );
+                    $this->controller->sendMessage($message_data);
+                    return;
+                }
+                $this->showBadRequestMessage();
+                break;
 
             default:
                 null;

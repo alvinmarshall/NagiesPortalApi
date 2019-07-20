@@ -31,10 +31,10 @@ class Request
         $this->header = apache_request_headers();
         $jwt = $this->header['Authorization'] ?? '';
         if (!empty($jwt)) {
-//            if (strpos($jwt, "key") !== true) {
-//                /* firebase key, is been handled in sendMessage function in user controller*/
-//                $this->token = null;
-//            }
+            if (strpos($jwt, "key") !== true) {
+                /* firebase key, is been handled in sendMessage function in user controller*/
+                $this->token = null;
+            }
             $this->token = explode("Bearer ", $jwt)[1];
         }
         $this->data = json_decode(file_get_contents('php://input'));

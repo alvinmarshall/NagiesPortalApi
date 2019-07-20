@@ -5,6 +5,8 @@ namespace App\controller;
 
 
 use App\auth\Authentication;
+use App\common\AppConstant;
+use App\common\utils\Validator;
 use App\data\model\Users;
 
 class UsersController extends BaseController
@@ -105,37 +107,36 @@ class UsersController extends BaseController
         }
     }
 
-//    function sendMessage(array $messageContent)
-//    {
-//        $deviceId = $messageContent['device'];
-//        $title = $messageContent['title'];
-//        $content = $messageContent['message'];
-//        $field = ['deviceId', 'title', 'message'];
-//        $input = [$deviceId, $title, $content];
-//        $key = AppConstant::FIREBASE_MESSAGING_KEY;
-//        if (!Validator::validateInput($field, $input)) {
-//            return;
-//        }
-//        $fcmBody = [
-//            "to" => $deviceId,
-//            "notification" => [
-//                "body" => $content,
-//                "title" => $title
-//            ]
-//        ];
-//        $fcmBody = json_encode($fcmBody);
-//        $headers = [
-//            'Content-Type: application/json',
-//            "Authorization: key=" . AppConstant::FIREBASE_MESSAGING_KEY
-//        ];
-//        $ch = curl_init();
-//        curl_setopt($ch, CURLOPT_URL, AppConstant::FIREBASE_MESSAGING_URL);
-//        curl_setopt($ch, CURLOPT_POST, true);
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $fcmBody);
-//        $results = curl_exec($ch);
-//        curl_close($ch);
-//        echo $results;
-//    }
+    function sendMessage(array $messageContent)
+    {
+        $deviceId = $messageContent['device'];
+        $title = $messageContent['title'];
+        $content = $messageContent['message'];
+        $field = ['deviceId', 'title', 'content'];
+        $input = [$deviceId, $title, $content];
+        if (!Validator::validateInput($field, $input)) {
+            return;
+        }
+        $fcmBody = [
+            "to" => $deviceId,
+            "notification" => [
+                "body" => $content,
+                "title" => $title
+            ]
+        ];
+        $fcmBody = json_encode($fcmBody);
+        $headers = [
+            'Content-Type: application/json',
+            "Authorization: key=" . getenv('FCM_KEY')
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, AppConstant::FIREBASE_MESSAGING_URL);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fcmBody);
+        $results = curl_exec($ch);
+        curl_close($ch);
+        echo $results;
+    }
 }
