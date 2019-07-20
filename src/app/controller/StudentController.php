@@ -4,9 +4,13 @@
 namespace App\controller;
 
 
+use App\auth\Authentication;
+use App\common\AppConstant;
 use App\common\utils\FileExtensionUtils;
 use App\common\utils\PageUtils;
+use App\common\utils\Validator;
 use App\data\model\Students;
+use App\data\model\Users;
 use App\resource\StudentResource;
 use PDO;
 use PDOStatement;
@@ -440,6 +444,36 @@ class StudentController extends BaseController
         header('Content-Encoding: none');
         header("Content-Type: $content_type");
         readfile($path);
+    }
+
+    /**
+     * @param $credentials
+     */
+    function changePassword($credentials)
+    {
+        $id = Authentication::getDecodedData()['id'];
+        $old_password = $credentials['old_password'] ?? null;
+        $new_password = $credentials['new_password'] ?? null;
+        $confirm_password = $credentials['confirm_password'] ?? null;
+        $field = ['username', 'old_password', 'new_password', 'confirm_password'];
+        $input = [$id, $old_password, $new_password, $confirm_password];
+        if (!Validator::validateInput($field,$input)){
+            return;
+        }
+        $password_content = [
+            "id" => $id,
+            "old" => $old_password,
+            "new" => $new_password,
+            "confirm" => $confirm_password
+        ];
+
+        $model = new Users($this->conn);
+        $result = $model->changeUserPassword(AppConstant::TABLE_STUDENT,$password_content);
+        if (!$result){
+            StudentResource::showBadRequest($model);
+            return;
+        }
+        StudentResource::showData($model);
     }
 
 }

@@ -227,6 +227,20 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/students/change_password":
+                    if ($this->requestMethod == 'POST') {
+                        $credentials = array(
+                            "username" => self::$data->username ?? null,
+                            "old_password" => self::$data->old_password ?? null,
+                            "new_password" => self::$data->new_password ?? null,
+                            "confirm_password" => self::$data->confirm_password ?? null
+                        );
+                        $this->controller->changePassword($credentials);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -271,6 +285,22 @@ class Actions
                 }
                 $this->showBadRequestMessage();
                 break;
+
+//            case "/api/users/messaging":
+//                if ($this->requestMethod == 'POST') {
+//                    $message_data = array(
+//                        "device" => self::$data->deviceId ?? null,
+//                        "title" => self::$data->title ?? null,
+//                        "message" => self::$data->content ?? null
+//                    );
+//                    $this->controller->sendMessage($message_data);
+//                    return;
+//                }
+//                $this->showBadRequestMessage();
+//                break;
+
+            default:
+                null;
         }
     }
 
