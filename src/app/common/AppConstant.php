@@ -11,4 +11,8 @@ class AppConstant
     const TABLE_ASSIGNMENT_IMAGE = "assignment_image";
     const FORMAT_IMAGE = "jpeg";
     const FORMAT_PDF = "pdf";
+    const TABLE_STUDENT = "student";
+    const TABLE_TEACHER = "teachers";
+    const FIREBASE_MESSAGING_URL = "https://fcm.googleapis.com/fcm/send";
+
 }
