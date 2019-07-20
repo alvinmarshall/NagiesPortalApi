@@ -82,7 +82,7 @@ class UsersController extends BaseController
                 "aud" => Authentication::$jwt_package['aud'],
                 "iat" => Authentication::$jwt_package['iat'],
                 "nbf" => Authentication::$jwt_package['nbf'],
-                "key" => Authentication::$jwt_package['key']
+                "key" => getenv('JWT_KEY')
             );
 
             $user_data = array(

@@ -13,7 +13,6 @@ class Authentication
     public static $error;
     private static $token_data;
     public static $jwt_package = array(
-        "key" => "portal_key",
         "alg" => array('HS256'),
         "iss" => "http://infordasgh.com",
         "aud" => "http://infordasgh.com",
@@ -95,7 +94,7 @@ class Authentication
         $decode = null;
         if ($token == null) return false;
         try {
-            $decode = self::decodeJWTToken($token, self::$jwt_package['key'], self::$jwt_package['alg']);
+            $decode = self::decodeJWTToken($token, getenv('JWT_KEY'), self::$jwt_package['alg']);
             if ($decode) {
                 return true;
             }
