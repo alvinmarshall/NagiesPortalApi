@@ -27,6 +27,7 @@ class Router
             /**Users routes*/
             "/api/users/parent" => "UsersController@authenticateUser",
             "/api/users/teacher" => "UsersController@authenticateUser",
+            "/api/students/change_password" => "UsersController@changePassword",
 
             /**Teachers routes*/
             "/api/teachers/assignment_pdf" => "TeacherController@assignmentFormat",
@@ -36,7 +37,11 @@ class Router
             "/api/teachers/upload_assignment_pdf" => "TeacherController@sendAssignmentPDF",
             "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage",
             "/api/teachers/upload_report_pdf" => "TeacherController@sendReportPDF",
-            "/api/teachers/upload_report_image" => "TeacherController@sendReportImage"
+            "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
+
+            //firebase route
+//           "/api/users/messaging" => "UsersController@sendMessage"
+
 
 
         ];

@@ -8,17 +8,14 @@ use PDOException;
 
 class Database
 {
-    private $host = 'localhost';
-    private $db_name = 'portal';
-    private $usr = 'root';
-    private $pwd = '';
     private static $conn;
 
     function getConnection()
     {
         self::$conn = null;
         try {
-            self::$conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";", $this->usr, $this->pwd);
+            self::$conn = new PDO("mysql:host=" . getenv('DB_HOST') .
+                ";dbname=" . getenv('DB_NAME') . ";", getenv('DB_USR'), getenv('DB_PWD'));
             self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $exception) {
             echo $exception;

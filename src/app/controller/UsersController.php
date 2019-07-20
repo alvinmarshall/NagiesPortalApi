@@ -55,7 +55,7 @@ class UsersController extends BaseController
         $check_username = null;
         switch ($userType) {
             case 'parent':
-                $check_username = $usr->verifyParentUsername($username,$password, 'student');
+                $check_username = $usr->verifyParentUsername($username, $password, 'student');
                 $this->prepareToAuthenticate($check_username, $password, $usr);
                 break;
 
@@ -82,7 +82,7 @@ class UsersController extends BaseController
                 "aud" => Authentication::$jwt_package['aud'],
                 "iat" => Authentication::$jwt_package['iat'],
                 "nbf" => Authentication::$jwt_package['nbf'],
-                "key" => Authentication::$jwt_package['key']
+                "key" => getenv('JWT_KEY')
             );
 
             $user_data = array(
@@ -104,4 +104,38 @@ class UsersController extends BaseController
             echo json_encode($model->output);
         }
     }
+
+//    function sendMessage(array $messageContent)
+//    {
+//        $deviceId = $messageContent['device'];
+//        $title = $messageContent['title'];
+//        $content = $messageContent['message'];
+//        $field = ['deviceId', 'title', 'message'];
+//        $input = [$deviceId, $title, $content];
+//        $key = AppConstant::FIREBASE_MESSAGING_KEY;
+//        if (!Validator::validateInput($field, $input)) {
+//            return;
+//        }
+//        $fcmBody = [
+//            "to" => $deviceId,
+//            "notification" => [
+//                "body" => $content,
+//                "title" => $title
+//            ]
+//        ];
+//        $fcmBody = json_encode($fcmBody);
+//        $headers = [
+//            'Content-Type: application/json',
+//            "Authorization: key=" . AppConstant::FIREBASE_MESSAGING_KEY
+//        ];
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, AppConstant::FIREBASE_MESSAGING_URL);
+//        curl_setopt($ch, CURLOPT_POST, true);
+//        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $fcmBody);
+//        $results = curl_exec($ch);
+//        curl_close($ch);
+//        echo $results;
+//    }
 }

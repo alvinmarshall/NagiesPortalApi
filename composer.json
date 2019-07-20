@@ -13,5 +13,6 @@
     "ext-curl": "*"
   },
   "require-dev": {
+    "vlucas/phpdotenv": "^3.4"
   }
 }
