@@ -2,16 +2,15 @@
 
 
 namespace App\config;
-
 use PDO;
 use PDOException;
 
 class Database
 {
-    private $host = 'localhost';
-    private $db_name = 'portal';//id10087032_portal
-    private $usr = 'root';//id10087032_root
-    private $pwd = '';//zMKuutzBcF4Dp5f
+   private $host = 'localhost';
+   private $db_name = 'portal';
+   private $usr = 'root';
+   private $pwd = '';
     private static $conn;
 
     function getConnection()
