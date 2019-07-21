@@ -1,8 +1,8 @@
 <?php
 
 
-use Dotenv\Dotenv;
+//use Dotenv\Dotenv;
 
 require __DIR__. '/../../vendor/autoload.php';
-$env = Dotenv::create(__DIR__. '/../../');
-$env->load();
+//$env = Dotenv::create(__DIR__. '/../../');
+//$env->load();
