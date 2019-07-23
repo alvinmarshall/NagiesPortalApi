@@ -335,8 +335,8 @@ class StudentController extends BaseController
                 "studentName" => $Students_Name,
                 "teacherEmail" => $Teachers_Email,
                 'fileUrl' => $Report_File,
-                'format'  => strtolower($format),
-                'date'  => $Report_Date
+                'format' => strtolower($format),
+                'date' => $Report_Date
             ];
             array_push($model->output['Assignment'], $assigment_items);
         }
@@ -457,7 +457,7 @@ class StudentController extends BaseController
         $confirm_password = $credentials['confirm_password'] ?? null;
         $field = ['username', 'old_password', 'new_password', 'confirm_password'];
         $input = [$id, $old_password, $new_password, $confirm_password];
-        if (!Validator::validateInput($field,$input)){
+        if (!Validator::validateInput($field, $input)) {
             return;
         }
         $password_content = [
@@ -468,12 +468,45 @@ class StudentController extends BaseController
         ];
 
         $model = new Users($this->conn);
-        $result = $model->changeUserPassword(AppConstant::TABLE_STUDENT,$password_content);
-        if (!$result){
+        $result = $model->changeUserPassword(AppConstant::TABLE_STUDENT, $password_content);
+        if (!$result) {
             StudentResource::showBadRequest($model);
             return;
         }
         StudentResource::showData($model);
     }
 
+    function getTeachers()
+    {
+        $model = new Students($this->conn);
+        $result = $model->getClassTeachers();
+        if ($result == null) return;
+        $result->execute();
+        $num = $result->rowCount();
+        $model->output['message'] = 'Student Teachers';
+        $model->output['count'] = $num;
+        $model->output['studentTeachers'] = [];
+        if ($num == 0) {
+            StudentResource::showNoData($model);
+            return;
+        }
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /** @var string $Teachers_No
+             * @var string $Teachers_Name
+             * @var string $Gender
+             * @var string $Contact
+             * @var string $Image
+             */
+            $teacher_item = [
+                "uid" => $Teachers_No,
+                "teacherName" => $Teachers_Name,
+                "gender" => $Gender,
+                "contact" => $Contact,
+                "imageUrl" => $Image
+            ];
+            array_push($model->output['studentTeachers'], $teacher_item);
+        }
+        StudentResource::showData($model);
+    }
 }

@@ -22,6 +22,7 @@ class Router
             "/api/students/messages" => "StudentController@getMessages",
             "/api/students/profile" => "StudentController@getProfile",
             "/api/students/download" => "StudentController@getFile",
+            "/api/students/teachers" => "StudentController@getTeachers",
 
 
             /**Users routes*/
@@ -40,8 +41,7 @@ class Router
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
 
             //firebase route
-           "/api/users/messaging" => "UsersController@sendMessage"
-
+            "/api/users/messaging" => "UsersController@sendMessage"
 
 
         ];

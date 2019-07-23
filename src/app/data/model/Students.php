@@ -340,4 +340,19 @@ class Students extends BaseModel implements IDataAccess
         $stmt->bindParam(1, $level);
         return $stmt;
     }
+
+    /**
+     * @return bool|PDOStatement|null
+     */
+    function getClassTeachers()
+    {
+        $this->output['type'] = 'Teachers';
+        $level = Authentication::getDecodedData()['level'] ?? null;
+        if ($level == null) return null;
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT Teachers_No, Teachers_Name, Gender, Contact, Image FROM teachers WHERE Level_Name = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $level);
+        return $stmt;
+    }
 }

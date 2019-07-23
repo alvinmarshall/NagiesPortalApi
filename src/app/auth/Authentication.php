@@ -3,7 +3,7 @@
 
 namespace App\auth;
 define('iat', time());
-define('nbf', iat );
+define('nbf', iat);
 define('exp', nbf + 86400); // since 24 hours = 86,400 seconds
 use Exception;
 use Firebase\JWT\JWT;
@@ -115,7 +115,8 @@ class Authentication
         ];
     }
 
-    public static function getDecodedData(){
+    public static function getDecodedData()
+    {
         return self::$token_data;
     }
 
