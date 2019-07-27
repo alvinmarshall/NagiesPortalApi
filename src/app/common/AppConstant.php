@@ -14,5 +14,9 @@ class AppConstant
     const TABLE_STUDENT = "student";
     const TABLE_TEACHER = "teachers";
     const FIREBASE_MESSAGING_URL = "https://fcm.googleapis.com/fcm/send";
-
+    const IOC_REQUEST = 'request';
+    const IOC_STUDENTS_MODEL = 'students.model';
+    const IOC_DATABASE = 'db';
+    const IOC_TEACHERS_MODEL = 'teachers.model';
+    const IOC_USER_MODEL = 'users.model';
 }

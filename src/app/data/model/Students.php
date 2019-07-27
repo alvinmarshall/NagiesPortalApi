@@ -6,6 +6,7 @@ namespace App\data\model;
 
 use App\auth\Authentication;
 use App\common\utils\Validator;
+use App\config\Database;
 use App\data\IDataAccess;
 use PDO;
 use PDOStatement;
@@ -29,13 +30,13 @@ class Students extends BaseModel implements IDataAccess
 
     /**
      * Students constructor.
-     * @param PDO $connection
+     * @param Database $connection
      */
-    public function __construct(PDO $connection)
+    public function __construct(Database $connection)
     {
         $this->dbTable = 'student';
         $this->output['type'] = 'Students';
-        $this->dbConn = $connection;
+        $this->dbConn = $connection->getConnection();
     }
 
     function add()

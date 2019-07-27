@@ -1,17 +1,25 @@
-<?php
+<?php /** @noinspection ALL */
 
 
 namespace App\controller;
 
 
+use App\common\AppConstant;
 use App\common\utils\DirectoryUtils;
 use App\data\model\Teachers;
 use App\resource\TeacherResource;
+use App\ServiceContainer;
 use PDO;
 use PDOStatement;
 
 class TeacherController extends BaseController
 {
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = ServiceContainer::inject()->get(AppConstant::IOC_TEACHERS_MODEL);
+    }
 
     function index()
     {
@@ -41,13 +49,13 @@ class TeacherController extends BaseController
     function uploadFile(string $dbTable)
     {
         $upload_dir = './students/uploads/';
-        if (isset($_FILES['pdf']['name']) ) {
+        if (isset($_FILES['pdf']['name'])) {
             DirectoryUtils::createDir($upload_dir);
             $file_info = pathinfo($_FILES['pdf']['name']);
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
             $destination = $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension,$dbTable);
+            $this->prepareToUploadFile('pdf', $destination, $upload_dir, $file_name, $extension, $dbTable);
 
         } elseif (isset($_FILES['image']['name'])) {
             DirectoryUtils::createDir($upload_dir);
@@ -55,7 +63,7 @@ class TeacherController extends BaseController
             $file_name = $file_info['filename'];
             $extension = $file_info['extension'];
             $destination = $upload_dir . $file_name . '.' . $extension;
-            $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension,$dbTable);
+            $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension, $dbTable);
 
         } else {
             echo json_encode(array('message' => 'No file to upload'));
@@ -64,15 +72,14 @@ class TeacherController extends BaseController
 
     function getMessages()
     {
-        $model = new Teachers($this->conn);
-        $results = $model->getMessages();
+        $results = $this->model->getMessages();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
-        $model->output['count'] = $num;
-        $model->output['messages'] = [];
+        $this->model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
+        $this->model->output['count'] = $num;
+        $this->model->output['messages'] = [];
         if ($num == 0) {
-            TeacherResource::showNoData($model);
+            TeacherResource::showNoData($this->model);
             return;
         }
 
@@ -90,9 +97,9 @@ class TeacherController extends BaseController
                 'content' => $Message,
                 'status' => $M_Read
             ];
-            array_push($model->output['messages'], $message_item);
+            array_push($this->model->output['messages'], $message_item);
         }
-        TeacherResource::showData($model);
+        TeacherResource::showData($this->model);
     }
 
     /**
@@ -100,17 +107,16 @@ class TeacherController extends BaseController
      */
     function assignmentFormat($format)
     {
-        $model = new Teachers($this->conn);
         $results = null;
         $format = strtoupper($format);
         switch ($format) {
             case 'PDF':
-                $results = $model->getAssignmentType('assignment', $format);
-                $this->getAssignment($format, $results, $model);
+                $results = $this->model->getAssignmentType('assignment', $format);
+                $this->getAssignment($format, $results, $this->model);
                 break;
             case 'JPEG':
-                $results = $model->getAssignmentType('assignment_image', $format);
-                $this->getAssignment($format, $results, $model);
+                $results = $this->model->getAssignmentType('assignment_image', $format);
+                $this->getAssignment($format, $results, $this->model);
                 break;
             default:
                 null;
@@ -119,15 +125,14 @@ class TeacherController extends BaseController
 
     function getComplaints()
     {
-        $model = new Teachers($this->conn);
-        $results = $model->getComplaints();
+        $results = $this->model->getComplaints();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = $num == 1 ? "Complaint Message" : "Complaint Messages";
-        $model->output['count'] = $num;
-        $model->output['complaints'] = [];
+        $this->model->output['message'] = $num == 1 ? "Complaint Message" : "Complaint Messages";
+        $this->model->output['count'] = $num;
+        $this->model->output['complaints'] = [];
         if ($num == 0) {
-            TeacherResource::showNoData($model);
+            TeacherResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -152,9 +157,9 @@ class TeacherController extends BaseController
                 "message" => $Message,
                 "date" => $Message_Date
             ];
-            array_push($model->output['complaints'], $complaint_item);
+            array_push($this->model->output['complaints'], $complaint_item);
         }
-        TeacherResource::showData($model);
+        TeacherResource::showData($this->model);
     }
 
     private function getAssignment($format, PDOStatement $results, Teachers $model)
@@ -204,19 +209,18 @@ class TeacherController extends BaseController
      */
     private function prepareToUploadFile(
         string $format, string $destination,
-        string $upload_dir, $file_name, $extension,string $dbTable
+        string $upload_dir, $file_name, $extension, string $dbTable
     ): void
     {
         if (move_uploaded_file($_FILES[$format]['tmp_name'], $destination)) {
-            $model = new Teachers($this->conn);
             $location = $upload_dir . $file_name . '.' . $extension;
-            if ($model->saveUploadFilePath($format, $location,$dbTable)) {
-                $model->output['id'] = $model->id;
-                $model->output['errors'] = $model->error;
-                echo json_encode($model->output);
+            if ($this->model->saveUploadFilePath($format, $location, $dbTable)) {
+                $this->model->output['id'] = $this->model->id;
+                $this->model->output['errors'] = $this->model->error;
+                echo json_encode($this->model->output);
             } else {
-                $model->output['errors'] = $model->error;
-                echo json_encode($model->output);
+                $this->model->output['errors'] = $this->model->error;
+                echo json_encode($this->model->output);
             }
         } else {
             echo json_encode(array('message' => 'attempting to upload file failed'));

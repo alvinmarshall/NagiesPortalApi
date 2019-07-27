@@ -2,9 +2,10 @@
 
 namespace App;
 
+use App\common\AppConstant;
 use App\data\action\Actions;
-use App\routes\Request;
 use App\routes\Router;
+use Exception;
 
 class Dispatcher
 {
@@ -12,10 +13,11 @@ class Dispatcher
 
     /**
      * Dispatcher constructor.
+     * @throws Exception
      */
     public function __construct()
     {
-        $this->req = new Request();
+        $this->req = ServiceContainer::inject()->get(AppConstant::IOC_REQUEST);
     }
 
     /**start web service*/

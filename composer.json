@@ -10,7 +10,8 @@
     "ext-apache": "*",
     "ext-json": "*",
     "ext-openssl": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "symfony/dependency-injection": "^4.3"
   },
   "require-dev": {
     "vlucas/phpdotenv": "^3.4"
