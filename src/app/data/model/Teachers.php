@@ -5,8 +5,8 @@ namespace App\data\model;
 
 
 use App\auth\Authentication;
+use App\config\Database;
 use App\data\IDataAccess;
-use PDO;
 use PDOStatement;
 use Throwable;
 
@@ -16,11 +16,11 @@ class Teachers extends BaseModel implements IDataAccess
 
     /**
      * Teachers constructor.
-     * @param $dbConn
+     * @param Database $connection
      */
-    public function __construct(PDO $dbConn)
+    public function __construct(Database $connection)
     {
-        $this->dbConn = $dbConn;
+        $this->dbConn = $connection->getConnection();
     }
 
 

@@ -4,8 +4,6 @@
 namespace App\resource;
 
 
-use App\data\model\BaseModel;
-
 class StudentResource extends Resource
 {
 
@@ -25,7 +23,7 @@ class StudentResource extends Resource
         echo json_encode($model->output);
     }
 
-    static function showBadRequest(BaseModel $model)
+    static function showBadRequest($model)
     {
         http_response_code(400);
         $model->output['status'] = 400;

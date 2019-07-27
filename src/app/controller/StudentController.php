@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 
 namespace App\controller;
@@ -10,13 +10,21 @@ use App\common\utils\FileExtensionUtils;
 use App\common\utils\PageUtils;
 use App\common\utils\Validator;
 use App\data\model\Students;
-use App\data\model\Users;
 use App\resource\StudentResource;
+use App\ServiceContainer;
+use Exception;
 use PDO;
 use PDOStatement;
 
 class StudentController extends BaseController
 {
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = ServiceContainer::inject()->get(AppConstant::IOC_STUDENTS_MODEL);
+    }
+
     /**
      * StudentController constructor.
      * @param $data
@@ -25,30 +33,28 @@ class StudentController extends BaseController
     function sendComplaints($data)
     {
         if (!isset($data)) return;
-        $model = new Students($this->conn);
         $complaint_data = [
             'content' => $data->content ?? null
         ];
-        if ($model->sendComplaints($complaint_data)) {
-            $model->output['id'] = $model->id;
-            $model->output['errors'] = $model->error;
-            StudentResource::showData($model);
+        if ($this->model->sendComplaints($complaint_data)) {
+            $this->model->output['id'] = $this->model->id;
+            $this->model->output['errors'] = $this->model->error;
+            StudentResource::showData($this->model);
         } else {
-            StudentResource::showBadRequest($model);
+            StudentResource::showBadRequest($this->model);
         }
     }
 
     function index()
     {
-        $model = new Students($this->conn);
-        $results = $model->get();
+        $results = $this->model->get();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = "Students Records";
-        $model->output['count'] = $num;
-        $model->output['students'] = [];
+        $this->model->output['message'] = "Students Records";
+        $this->model->output['count'] = $num;
+        $this->model->output['students'] = [];
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -89,9 +95,9 @@ class StudentController extends BaseController
                 "guardianContact" => $Guardian_No,
                 "image" => $Image
             ];
-            array_push($model->output['students'], $student_item);
+            array_push($this->model->output['students'], $student_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 
     /**
@@ -101,17 +107,16 @@ class StudentController extends BaseController
      */
     function paginateStudent(int $page = 1, int $from = 0, int $to = 5)
     {
-        $model = new Students($this->conn);
-        $results = $model->getWithPaginate($from, $to);
+        $results = $this->model->getWithPaginate($from, $to);
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = "Students Records";
-        $model->output['count'] = $num;
-        $model->output['students'] = [];
-        $model->output['paging'] = [];
-        $total_row = $model->getTotalStudent();
+        $this->model->output['message'] = "Students Records";
+        $this->model->output['count'] = $num;
+        $this->model->output['students'] = [];
+        $this->model->output['paging'] = [];
+        $total_row = $this->model->getTotalStudent();
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -152,12 +157,12 @@ class StudentController extends BaseController
                 "guardianContact" => $Guardian_No,
                 "image" => $Image
             ];
-            array_push($model->output['students'], $student_item);
+            array_push($this->model->output['students'], $student_item);
         }
         $page_url = "/api/students/";
         $pagination = $this->getPaginate($page, $total_row, $to, $page_url);
-        $model->output['paging'] = $pagination;
-        StudentResource::showData($model);
+        $this->model->output['paging'] = $pagination;
+        StudentResource::showData($this->model);
     }
 
     /**
@@ -165,15 +170,14 @@ class StudentController extends BaseController
      */
     function show($id)
     {
-        $model = new Students($this->conn);
-        $results = $model->getById($id);
+        $results = $this->model->getById($id);
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = "Student Record";
-        $model->output['count'] = $num;
-        $model->output['students'] = array();
+        $this->model->output['message'] = "Student Record";
+        $this->model->output['count'] = $num;
+        $this->model->output['students'] = array();
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -214,9 +218,9 @@ class StudentController extends BaseController
                 "guardianContact" => $Guardian_No,
                 "image" => $Image
             ];
-            array_push($model->output['students'], $student_item);
+            array_push($this->model->output['students'], $student_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 
     /**
@@ -224,16 +228,15 @@ class StudentController extends BaseController
      */
     function getReport($format)
     {
-        $model = new Students($this->conn);
         $table = $format == 'pdf' ? 'report' : 'report_png';
-        $results = $model->getStudentReport($table);
+        $results = $this->model->getStudentReport($table);
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = "Student Report";
-        $model->output['count'] = $num;
-        $model->output['report'] = [];
+        $this->model->output['message'] = "Student Report";
+        $this->model->output['count'] = $num;
+        $this->model->output['report'] = [];
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -251,9 +254,9 @@ class StudentController extends BaseController
                 'format' => $format,
                 'date' => $Report_Date
             ];
-            array_push($model->output['report'], $result_item);
+            array_push($this->model->output['report'], $result_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 
     /**
@@ -261,17 +264,16 @@ class StudentController extends BaseController
      */
     function assignmentFormat($format)
     {
-        $model = new Students($this->conn);
         $results = null;
         $format = strtoupper($format);
         switch ($format) {
             case 'PDF':
-                $results = $model->getAssignmentType('assignment', $format);
-                $this->getAssignment($format, $results, $model);
+                $results = $this->model->getAssignmentType('assignment', $format);
+                $this->getAssignment($format, $results, $this->model);
                 break;
             case 'JPEG':
-                $results = $model->getAssignmentType('assignment_image', $format);
-                $this->getAssignment($format, $results, $model);
+                $results = $this->model->getAssignmentType('assignment_image', $format);
+                $this->getAssignment($format, $results, $this->model);
                 break;
             default:
                 null;
@@ -343,17 +345,19 @@ class StudentController extends BaseController
         StudentResource::showData($model);
     }
 
+    /**
+     *
+     */
     function getMessages()
     {
-        $model = new Students($this->conn);
-        $results = $model->getMessages();
+        $results = $this->model->getMessages();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
-        $model->output['count'] = $num;
-        $model->output['messages'] = [];
+        $this->model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
+        $this->model->output['count'] = $num;
+        $this->model->output['messages'] = [];
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -370,22 +374,21 @@ class StudentController extends BaseController
                 'content' => $Message,
                 'read' => $M_Read
             ];
-            array_push($model->output['messages'], $message_item);
+            array_push($this->model->output['messages'], $message_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 
     function getProfile()
     {
-        $model = new Students($this->conn);
-        $results = $model->getStudentDetails();
+        $results = $this->model->getStudentDetails();
         $results->execute();
         $num = $results->rowCount();
-        $model->output['message'] = 'Student Profile';
-        $model->output['count'] = $num;
-        $model->output['studentProfile'] = [];
+        $this->model->output['message'] = 'Student Profile';
+        $this->model->output['count'] = $num;
+        $this->model->output['studentProfile'] = [];
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
@@ -420,9 +423,9 @@ class StudentController extends BaseController
                 "contact" => $Guardian_No,
                 "imageUrl" => $Image
             ];
-            array_push($model->output['studentProfile'], $profile_item);
+            array_push($this->model->output['studentProfile'], $profile_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 
     /**
@@ -448,6 +451,7 @@ class StudentController extends BaseController
 
     /**
      * @param $credentials
+     * @throws Exception
      */
     function changePassword($credentials)
     {
@@ -467,7 +471,7 @@ class StudentController extends BaseController
             "confirm" => $confirm_password
         ];
 
-        $model = new Users($this->conn);
+        $model = ServiceContainer::inject()->get(AppConstant::IOC_USER_MODEL);
         $result = $model->changeUserPassword(AppConstant::TABLE_STUDENT, $password_content);
         if (!$result) {
             StudentResource::showBadRequest($model);
@@ -478,16 +482,15 @@ class StudentController extends BaseController
 
     function getTeachers()
     {
-        $model = new Students($this->conn);
-        $result = $model->getClassTeachers();
+        $result = $this->model->getClassTeachers();
         if ($result == null) return;
         $result->execute();
         $num = $result->rowCount();
-        $model->output['message'] = 'Student Teachers';
-        $model->output['count'] = $num;
-        $model->output['studentTeachers'] = [];
+        $this->model->output['message'] = 'Student Teachers';
+        $this->model->output['count'] = $num;
+        $this->model->output['studentTeachers'] = [];
         if ($num == 0) {
-            StudentResource::showNoData($model);
+            StudentResource::showNoData($this->model);
             return;
         }
         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -505,8 +508,8 @@ class StudentController extends BaseController
                 "contact" => $Contact,
                 "imageUrl" => $Image
             ];
-            array_push($model->output['studentTeachers'], $teacher_item);
+            array_push($this->model->output['studentTeachers'], $teacher_item);
         }
-        StudentResource::showData($model);
+        StudentResource::showData($this->model);
     }
 }
