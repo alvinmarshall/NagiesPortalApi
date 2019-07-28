@@ -15,7 +15,10 @@ class FileExtensionUtils
             case 'pdf':
                 $content_type = 'application/pdf';
                 break;
-            case 'jpeg' || 'jpg':
+            case 'jpeg':
+                $content_type = 'image/jpeg';
+                break;
+            case 'jpg':
                 $content_type = 'image/jpeg';
                 break;
             case 'png':
