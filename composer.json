@@ -11,9 +11,12 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-curl": "*",
-    "symfony/dependency-injection": "^4.3"
+    "symfony/dependency-injection": "^4.3",
+    "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
-    "vlucas/phpdotenv": "^3.4"
+    "vlucas/phpdotenv": "^3.4",
+    "phpunit/phpunit": "^7",
+    "phpunit/dbunit": "^4.0"
   }
 }
