@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 
 namespace App\controller;
@@ -8,9 +8,21 @@ use App\auth\Authentication;
 use App\common\AppConstant;
 use App\common\utils\Validator;
 use App\data\model\Users;
+use App\ServiceContainer;
+use Exception;
 
 class UsersController extends BaseController
 {
+    private $model;
+
+    /**
+     * UsersController constructor.
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->model = ServiceContainer::inject()->get(AppConstant::IOC_USER_MODEL);
+    }
 
     function index()
     {
@@ -50,20 +62,19 @@ class UsersController extends BaseController
             echo json_encode(array("status" => 400, "message" => "field can't be empty"));
             return;
         }
-        $usr = new Users($this->conn);
-        $usr->output['status'] = 401;
-        $usr->output['message'] = 'email or password incorrect';
-        $usr->output['token'] = null;
+        $this->model->output['status'] = 401;
+        $this->model->output['message'] = 'email or password incorrect';
+        $this->model->output['token'] = null;
         $check_username = null;
         switch ($userType) {
             case 'parent':
-                $check_username = $usr->verifyParentUsername($username, $password, 'student');
-                $this->prepareToAuthenticate($check_username, $password, $usr);
+                $check_username = $this->model->verifyParentUsername($username, $password, 'student');
+                $this->prepareToAuthenticate($check_username, $password, $this->model);
                 break;
 
             case 'teacher':
-                $check_username = $usr->verifyTeacherUsername($username, 'teachers');
-                $this->prepareToAuthenticate($check_username, $password, $usr);
+                $check_username = $this->model->verifyTeacherUsername($username, 'teachers');
+                $this->prepareToAuthenticate($check_username, $password, $this->model);
                 break;
             default:
                 null;
