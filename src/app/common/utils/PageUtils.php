@@ -8,6 +8,7 @@ class PageUtils
 {
     function setPagination($page, $total_rows, $records_per_page, $page_url)
     {
+        if ($records_per_page == 0) return null;
         $paging_arr = [];
         $paging_arr['first'] = $page > 1 ? "{$page_url}page=1" : "";
         $total_pages = ceil($total_rows / $records_per_page);

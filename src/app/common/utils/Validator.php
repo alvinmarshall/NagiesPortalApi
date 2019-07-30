@@ -28,6 +28,11 @@ class Validator
     {
         $output = [];
         $error = [];
+        if (count($fields) != count($inputs)) {
+            $output['message'] = "field size mismatch input size";
+            echo json_encode($output);
+            return false;
+        }
         foreach ($inputs as $input => $data) {
             if (empty($data)) {
                 $output['message'] = "fields not set";

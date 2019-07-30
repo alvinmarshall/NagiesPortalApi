@@ -6,6 +6,7 @@ namespace App\data\model;
 
 use App\common\AppConstant;
 use App\common\utils\Validator;
+use App\config\Database;
 use Exception;
 use PDO;
 
@@ -20,11 +21,11 @@ class Users extends BaseModel
 
     /**
      * Users constructor.
-     * @param $dbConn
+     * @param Database $connection
      */
-    public function __construct(PDO $dbConn)
+    public function __construct(Database $connection)
     {
-        $this->dbConn = $dbConn;
+        $this->dbConn = $connection->getConnection();
     }
 
 

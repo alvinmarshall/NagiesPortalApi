@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+    <student
+            id="1"
+            Students_No="NAEC_1"
+            Students_Name="test_name_1"
+            Dob="2017-08-16"
+            Gender="Female"
+            Admin_Date="2019-01-16"
+            Age="1"
+            Section_Name="2018/2019"
+            Faculty_Name="PRE - SCHOOL"
+            Level_Name="Creche"
+            Semester_Name="Third Term"
+            Index_No="Creche"
+            Password="1234"
+            Guardian_Name="test_guardian"
+            Guardian_No="010000000"
+            Image="../students/uploads/doctor.jpg"/>
+
+    <student
+            id="2"
+            Students_No="NAEC_2"
+            Students_Name="test_name_2"
+            Dob="2017-08-16"
+            Gender="Female"
+            Admin_Date="2019-01-16"
+            Age="1"
+            Section_Name="2018/2019"
+            Faculty_Name="PRE - SCHOOL"
+            Level_Name="Creche"
+            Semester_Name="Third Term"
+            Index_No="Creche"
+            Password="1234"
+            Guardian_Name="test_guardian"
+            Guardian_No="020000000"
+            Image="../students/uploads/doctor.jpg"/>
+
+    <teachers
+            id="1"
+            Teachers_No="TEA_1"
+            Teachers_Name="test_teacher_name_1"
+            Dob="2019-05-16"
+            Age="0"
+            Gender="FEMALE"
+            Contact="000000000"
+            Admin_Date="2019-05-10"
+            Faculty_Name="PRE - SCHOOL"
+            Level_Name="Creche"
+            Username="test_username_1"
+            Password="1234"
+            Image="./teachers/uploads/teachers_1.jpg"/>
+
+    <teachers
+            id="2"
+            Teachers_No="TEA_2"
+            Teachers_Name="test_teacher_name_2"
+            Dob="2019-05-16"
+            Age="0"
+            Gender="FEMALE"
+            Contact="000000000"
+            Admin_Date="2019-05-10"
+            Faculty_Name="PRE - SCHOOL"
+            Level_Name="Creche"
+            Username="test_username_2"
+            Password="1234"
+            Image="./teachers/uploads/teachers_2.jpg"/>
+
+    <assignment
+            id="1"
+            Students_No="Creche"
+            Students_Name="test_teacher_name_1"
+            Teachers_Email="test_teacher_name_1"
+            Report_File="./students/uploads/assignment_1.pdf"
+            Report_Date="2019-07-18"/>
+    <assignment
+            id="2"
+            Students_No="Creche"
+            Students_Name="test_teacher_name_1"
+            Teachers_Email="test_teacher_name_1"
+            Report_File="./students/uploads/@selfhelpbooks_Never_Eat_Alone_.pdf"
+            Report_Date="2019-07-18"/>
+
+    <assignment_image
+            id="1"
+            Students_No="Creche"
+            Students_Name="test_teacher_name_1"
+            Teachers_Email="test_teacher_name_1"
+            Report_File="./students/uploads/assignment.png"
+            Report_Date="2019-07-18"/>
+
+    <assignment_image
+            id="2"
+            Students_No="Creche"
+            Students_Name="test_teacher_name_1"
+            Teachers_Email="test_teacher_name_1"
+            Report_File="./students/uploads/applet.png"
+            Report_Date="2019-07-18"/>
+
+    <complaints
+            id="1"
+            Students_No="NAEC_1"
+            Students_Name="test_name_1"
+            Level_Name="Nursery One"
+            Guardian_Name="test_guardian"
+            Guardian_No="01000000"
+            Teachers_Name="test_teacher_name_1"
+            Message="test complaint message"
+            Message_Date="2019-04-08"/>
+
+    <message
+            id="1"
+            Message_BY="prince"
+            M_Date="2019-05-20"
+            Message="test messages"
+            Message_Level="Creche"
+            M_Read="1"/>
+
+</dataset>
