@@ -37,7 +37,7 @@ class StudentControllerTest extends TestCase
 
     public function testIndex()
     {
-        $response = $this->client->get('students/', [
+        $response = $this->client->get('students', [
             'headers' => ['Authorization' => "Bearer " . $this->token]
         ]);
         $expected = json_decode($response->getBody(), true);

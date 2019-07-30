@@ -189,7 +189,7 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " LIMIT 5,15";
+                            Image FROM " . $this->dbTable . " LIMIT 15";
 
         $stmt = $this->dbConn->prepare($query);
         return $stmt;
