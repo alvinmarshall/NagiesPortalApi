@@ -293,22 +293,65 @@ class Actions
                 }
                 $this->showBadRequestMessage();
                 break;
+            default:
+                null;
+        }
+    }
 
-            case "/api/users/messaging":
+    function setFirebaseMessagingAction()
+    {
+        switch ($this->request) {
+            case '/api/message/single':
                 if ($this->requestMethod == 'POST') {
-                    $message_data = array(
-                        "device" => self::$data->deviceId ?? null,
-                        "title" => self::$data->title ?? null,
-                        "message" => self::$data->content ?? null
-                    );
-                    $this->controller->sendMessage($message_data);
+                    $notificationBody = [
+                        'deviceId' => self::$data->deviceId ?? null,
+                        'content' => self::$data->content ?? null,
+                        'title' => self::$data->title ?? null
+                    ];
+                    $this->controller->single($notificationBody);
+                    return;
+                }
+                $this->showBadRequestMessage();
+                break;
+            case '/api/message/group':
+                if ($this->requestMethod == 'POST') {
+                    $notificationBody = [
+                        'groupId' => self::$data->groupId ?? null,
+                        'content' => self::$data->content ?? null,
+                        'title' => self::$data->title ?? null
+                    ];
+                    $this->controller->group($notificationBody);
+                    return;
+                }
+                $this->showBadRequestMessage();
+                break;
+            case '/api/message/topic':
+                if ($this->requestMethod == 'POST') {
+                    $notificationBody = [
+                        'topic' => self::$data->topic ?? null,
+                        'content' => self::$data->content ?? null,
+                        'title' => self::$data->title ?? null
+                    ];
+                    $this->controller->topic($notificationBody);
                     return;
                 }
                 $this->showBadRequestMessage();
                 break;
 
+            case '/api/message/condition_topic':
+                if ($this->requestMethod == 'POST') {
+                    $notificationBody = [
+                        'condition' => self::$data->condition ?? null,
+                        'content' => self::$data->content ?? null,
+                        'title' => self::$data->title ?? null
+                    ];
+                    $this->controller->topic($notificationBody, true);
+                    return;
+                }
+                $this->showBadRequestMessage();
+                break;
             default:
-                null;
+                break;
         }
     }
 

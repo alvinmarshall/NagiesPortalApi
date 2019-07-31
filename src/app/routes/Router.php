@@ -40,9 +40,11 @@ class Router
             "/api/teachers/upload_report_pdf" => "TeacherController@sendReportPDF",
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
 
-            //firebase route
-            "/api/users/messaging" => "UsersController@sendMessage"
-
+            //firebase messaging route
+            "/api/message/single" => "FCMController@single",
+            "/api/message/group" => "FCMController@group",
+            "/api/message/topic" => "FCMController@topic",
+            "/api/message/condition_topic" => "FCMController@conditionTopic"
 
         ];
 
@@ -72,7 +74,8 @@ class Router
         $controller = [
             "students" => 'App\controller\StudentController',
             "users" => 'App\controller\UsersController',
-            "teachers" => 'App\controller\TeacherController'
+            "teachers" => 'App\controller\TeacherController',
+            'message' => 'App\controller\FCMController'
         ];
         $instance = $controller[$path];
         return new $instance();
