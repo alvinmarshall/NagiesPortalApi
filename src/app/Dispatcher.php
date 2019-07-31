@@ -51,6 +51,9 @@ class Dispatcher
             case "teachers":
                 $action->setTeachersAction();
                 break;
+            case "message":
+                $action->setFirebaseMessagingAction();
+                break;
             default:
                 null;
         }
