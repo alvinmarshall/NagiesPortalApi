@@ -19,4 +19,5 @@ class AppConstant
     const IOC_DATABASE = 'db';
     const IOC_TEACHERS_MODEL = 'teachers.model';
     const IOC_USER_MODEL = 'users.model';
+    const IOC_FCM_SERVICE = 'fcm.service';
 }

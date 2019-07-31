@@ -21,6 +21,7 @@ class ServiceContainer
             ->addArgument(new Reference(AppConstant::IOC_DATABASE));
         $container->register(AppConstant::IOC_TEACHERS_MODEL, 'App\data\model\Teachers')
             ->addArgument(new Reference(AppConstant::IOC_DATABASE));
+        $container->register(AppConstant::IOC_FCM_SERVICE, 'App\notification\FirebaseMessagingService');
         return $container;
     }
 }
