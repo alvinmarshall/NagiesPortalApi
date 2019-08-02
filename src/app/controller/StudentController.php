@@ -40,6 +40,9 @@ class StudentController extends BaseController
             $this->model->output['id'] = $this->model->id;
             $this->model->output['errors'] = $this->model->error;
             StudentResource::showData($this->model);
+            $model = ServiceContainer::inject()->get(AppConstant::IOC_FCM_SERVICE);
+            $msg = ['title' => 'Complaints from parent', 'content' => $complaint_data['content'], 'topic' => 'global'];
+            $model->sendTopicMessaging($msg);
         } else {
             StudentResource::showBadRequest($this->model);
         }

@@ -7,6 +7,7 @@ namespace App\data\model;
 use App\auth\Authentication;
 use App\config\Database;
 use App\data\IDataAccess;
+use PDO;
 use PDOStatement;
 use Throwable;
 
@@ -78,13 +79,10 @@ class Teachers extends BaseModel implements IDataAccess
         return $stmt;
     }
 
-    function getMessages()
+    function getAnnouncement()
     {
-        $level = Authentication::getDecodedData()['level'] ?? null;
-        if ($level == null) {
-            return null;
-        }
-        $this->output['type'] = 'Messages';
+        $level = 'administrator';
+        $this->output['type'] = 'Announcement';
         /** @noinspection SqlDialectInspection */
         $query = "SELECT 
                         id, Message_BY, M_Date, Message, Message_Level, M_Read
@@ -100,7 +98,7 @@ class Teachers extends BaseModel implements IDataAccess
      * @param $dbTable
      * @return bool
      */
-    function saveUploadFilePath($format, $destination,$dbTable): bool
+    function saveUploadFilePath($format, $destination, $dbTable): bool
     {
         $this->output['type'] = strtoupper($format);
         $table = $dbTable;
@@ -108,11 +106,11 @@ class Teachers extends BaseModel implements IDataAccess
         $date = date('Y-m-d');
         $name = Authentication::getDecodedData()['username'] ?? null;
         $email = Authentication::getDecodedData()['username'] ?? null;
-        if ($dbTable == 'report' || $dbTable == 'report_png'){
-            if (isset($_POST['students_no'])  && isset($_POST['students_name'])){
+        if ($dbTable == 'report' || $dbTable == 'report_png') {
+            if (isset($_POST['students_no']) && isset($_POST['students_name'])) {
                 $level = $_POST['students_no'];
                 $name = $_POST['students_name'];
-            }else{
+            } else {
                 $level = null;
                 $name = null;
                 $this->error['field'] = 'provide student report information fields';
@@ -135,7 +133,7 @@ class Teachers extends BaseModel implements IDataAccess
         $input = [$level, $name, $email, $destination, $date];
         $this->output['message'] = 'File upload successful';
         $this->output['format'] = $format;
-        if ($this->validateInput($field,$input)){
+        if ($this->validateInput($field, $input)) {
             return $this->prepareToInsertData($stmt, $input, $field);
         }
         return false;
@@ -182,6 +180,64 @@ class Teachers extends BaseModel implements IDataAccess
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param array $messageData
+     * @return bool
+     */
+    function sendMessage(array $messageData)
+    {
+        $data = $this->getTeacherInfo()[0];
+        if ($data == null) return false;
+        $date = date('Y-m-d');
+        $this->output['type'] = 'Message';
+        /** @noinspection SqlDialectInspection */
+        $query = "INSERT INTO message
+                        SET 
+                            Message_BY = :sender,
+                            Message = :content,
+                            Message_Level = :level,
+                            M_Date = :date
+                        ";
+        $this->error = [];
+        $stmt = $this->dbConn->prepare($query);
+        $field = ['sender', 'content', 'level', 'date'];
+        $input = [$data['username'], $messageData['content'], $data['level'], $date];
+
+        $isInputValid = $this->validateInput($field, $input);
+        if ($isInputValid) {
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return false;
+    }
+
+    private function getTeacherInfo()
+    {
+        $id = Authentication::getDecodedData()['id'] ?? '';
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT Username,Level_Name FROM teachers WHERE id = ? LIMIT 1";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $id);
+        $stmt->execute();
+        $num = $stmt->rowCount();
+        $item = [];
+        if ($num > 0) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                /**
+                 * @var string $Username
+                 * @var string $Level_Name
+                 */
+                $item_data = [
+                    "username" => $Username,
+                    "level" => $Level_Name
+                ];
+                array_push($item, $item_data);
+            }
+            return $item;
+        }
+        return null;
     }
 
 }

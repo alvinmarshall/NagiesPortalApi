@@ -82,9 +82,9 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
-                case  "/api/teachers/messages":
+                case  "/api/teachers/announcement":
                     if ($this->requestMethod == 'GET') {
-                        $this->controller->getMessages();
+                        $this->controller->getAnnouncement();
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -116,6 +116,18 @@ class Actions
                 case  "/api/teachers/upload_report_image":
                     if ($this->requestMethod == 'POST') {
                         $this->controller->uploadFile(AppConstant::TABLE_REPORT_IMAGE);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case "/api/teachers/change_password":
+                    $this->changePassword($this->requestMethod);
+                    break;
+
+                case "/api/teachers/send_message":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->sendMessage(self::$data);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -229,17 +241,7 @@ class Actions
                     break;
 
                 case "/api/students/change_password":
-                    if ($this->requestMethod == 'POST') {
-                        $credentials = array(
-                            "username" => self::$data->username ?? null,
-                            "old_password" => self::$data->old_password ?? null,
-                            "new_password" => self::$data->new_password ?? null,
-                            "confirm_password" => self::$data->confirm_password ?? null
-                        );
-                        $this->controller->changePassword($credentials);
-                        return;
-                    }
-                    $this->showBadRequestMessage();
+                    $this->changePassword($this->requestMethod);
                     break;
 
                 case "/api/students/teachers":
@@ -268,6 +270,7 @@ class Actions
                 $this->showBadRequestMessage();
                 break;
 
+            case "/api/users/teacher":
             case "/api/users/parent":
                 if ($this->requestMethod == 'POST') {
                     $credentials = array(
@@ -281,18 +284,6 @@ class Actions
                 $this->showBadRequestMessage();
                 break;
 
-            case "/api/users/teacher":
-                if ($this->requestMethod == 'POST') {
-                    $credentials = array(
-                        "username" => self::$data->username ?? null,
-                        "password" => self::$data->password ?? null,
-                        "user" => self::$userType
-                    );
-                    $this->controller->authenticateUser($credentials);
-                    return;
-                }
-                $this->showBadRequestMessage();
-                break;
             default:
                 null;
         }
@@ -368,5 +359,20 @@ class Actions
             array("status" => 401,
                 "message" => "You're not authorised for this action",
                 "error" => Authentication::$error));
+    }
+
+    private function changePassword(string $method)
+    {
+        if ($method == 'POST') {
+            $credentials = array(
+                "username" => self::$data->username ?? null,
+                "old_password" => self::$data->old_password ?? null,
+                "new_password" => self::$data->new_password ?? null,
+                "confirm_password" => self::$data->confirm_password ?? null
+            );
+            $this->controller->changePassword($credentials);
+            return;
+        }
+        $this->showBadRequestMessage();
     }
 }

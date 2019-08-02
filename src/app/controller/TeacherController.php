@@ -4,8 +4,10 @@
 namespace App\controller;
 
 
+use App\auth\Authentication;
 use App\common\AppConstant;
 use App\common\utils\DirectoryUtils;
+use App\common\utils\Validator;
 use App\data\model\Teachers;
 use App\resource\TeacherResource;
 use App\ServiceContainer;
@@ -70,9 +72,9 @@ class TeacherController extends BaseController
         }
     }
 
-    function getMessages()
+    function getAnnouncement()
     {
-        $results = $this->model->getMessages();
+        $results = $this->model->getAnnouncement();
         $results->execute();
         $num = $results->rowCount();
         $this->model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
@@ -86,13 +88,13 @@ class TeacherController extends BaseController
         while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
             extract($row);
             /**
-             * @var string $Message_By
+             * @var string $Message_BY
              * @var string $Message_Level
              * @var string $M_Read
              * @var string $Message
              */
             $message_item = [
-                'sender' => $Message_By,
+                'sender' => $Message_BY,
                 'level' => $Message_Level,
                 'content' => $Message,
                 'status' => $M_Read
@@ -226,4 +228,54 @@ class TeacherController extends BaseController
             echo json_encode(array('message' => 'attempting to upload file failed'));
         }
     }
+
+    /**
+     * @param $credentials
+     * @throws Exception
+     */
+    function changePassword($credentials)
+    {
+        $id = Authentication::getDecodedData()['id'];
+        $old_password = $credentials['old_password'] ?? null;
+        $new_password = $credentials['new_password'] ?? null;
+        $confirm_password = $credentials['confirm_password'] ?? null;
+        $field = ['username', 'old_password', 'new_password', 'confirm_password'];
+        $input = [$id, $old_password, $new_password, $confirm_password];
+        if (!Validator::validateInput($field, $input)) {
+            return;
+        }
+        $password_content = [
+            "id" => $id,
+            "old" => $old_password,
+            "new" => $new_password,
+            "confirm" => $confirm_password
+        ];
+
+        $model = ServiceContainer::inject()->get(AppConstant::IOC_USER_MODEL);
+        $result = $model->changeUserPassword(AppConstant::TABLE_TEACHER, $password_content);
+        if (!$result) {
+            TeacherResource::showBadRequest($model);
+            return;
+        }
+        TeacherResource::showData($model);
+    }
+
+    function sendMessage($data)
+    {
+        if (!isset($data)) return;
+        $message_data = [
+            'content' => $data->content ?? null
+        ];
+        if ($this->model->sendMessage($message_data)) {
+            $this->model->output['id'] = $this->model->id;
+            $this->model->output['errors'] = $this->model->error;
+            TeacherResource::showData($this->model);
+            $model = ServiceContainer::inject()->get(AppConstant::IOC_FCM_SERVICE);
+            $msg = ['title' => 'Message from teacher', 'content' => $message_data['content'], 'topic' => 'global'];
+            $model->sendTopicMessaging($msg);
+        } else {
+            TeacherResource::showBadRequest($this->model);
+        }
+    }
+
 }

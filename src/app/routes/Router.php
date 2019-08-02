@@ -28,17 +28,19 @@ class Router
             /**Users routes*/
             "/api/users/parent" => "UsersController@authenticateUser",
             "/api/users/teacher" => "UsersController@authenticateUser",
-            "/api/students/change_password" => "UsersController@changePassword",
+            "/api/students/change_password" => "StudentController@changePassword",
+            "/api/teachers/change_password" => "TeacherController@changePassword",
 
             /**Teachers routes*/
             "/api/teachers/assignment_pdf" => "TeacherController@assignmentFormat",
             "/api/teachers/assignment_image" => "TeacherController@assignmentFormat",
             "/api/teachers/complaints" => "TeacherController@getComplaints",
-            "/api/teachers/messages" => "TeacherController@getMessages",
+            "/api/teachers/announcement" => "TeacherController@getAnnouncement",
             "/api/teachers/upload_assignment_pdf" => "TeacherController@sendAssignmentPDF",
             "/api/teachers/upload_assignment_image" => "TeacherController@sendAssignmentImage",
             "/api/teachers/upload_report_pdf" => "TeacherController@sendReportPDF",
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
+            "/api/teachers/send_message" => "TeacherController@sendMessage",
 
             //firebase messaging route
             "/api/message/single" => "FCMController@single",

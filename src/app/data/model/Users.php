@@ -111,7 +111,7 @@ class Users extends BaseModel
      * @param array $data
      * @return bool
      */
-    function changeUserPassword(string $table, array $data):bool
+    function changeUserPassword(string $table, array $data): bool
     {
         $new = $data['new'];
         $confirm = $data['confirm'];
@@ -130,7 +130,7 @@ class Users extends BaseModel
                 $query = "UPDATE $table SET Password = ? WHERE Students_No = ?";
                 return $this->prepareToChangePassword($query, $data);
             case AppConstant::TABLE_TEACHER:
-                $query = "UPDATE $table SET Password = ? WHERE Teachers_No = ?";
+                $query = "UPDATE $table SET Password = ? WHERE id = ?";
                 return $this->prepareToChangePassword($query, $data);
             default:
                 return false;
@@ -142,7 +142,7 @@ class Users extends BaseModel
      * @param array $data
      * @return bool
      */
-    private function prepareToChangePassword(string $query, array $data):bool
+    private function prepareToChangePassword(string $query, array $data): bool
     {
         if ($query == null) return false;
 
