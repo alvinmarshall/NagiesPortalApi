@@ -132,6 +132,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/teachers/profile":
+                    if ($this->requestMethod == 'GET'){
+                        $this->controller->getTeacherProfile();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }

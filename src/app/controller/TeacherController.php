@@ -278,4 +278,47 @@ class TeacherController extends BaseController
         }
     }
 
+    function getTeacherProfile()
+    {
+        $results = $this->model->getTeacherDetails();
+        $results->execute();
+        $num = $results->rowCount();
+        $this->model->output['message'] = "Teacher Record";
+        $this->model->output['count'] = $num;
+        $this->model->output['teacherProfile'] = [];
+        if ($num == 0) {
+            TeacherResource::showNoData($this->model);
+            return;
+        }
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $Teachers_No
+             * @var string $Teachers_Name
+             * @var string $Level_Name
+             * @var string $Username
+             * @var string $Dob
+             * @var string $Admin_Date
+             * @var string $Faculty_Name
+             * @var string $Image
+             * @var string $Gender
+             * @var string $id
+             */
+            $teacher_item = [
+                "id" => $id,
+                "ref" => $Teachers_No,
+                "name" => $Teachers_Name,
+                "dob" => $Dob,
+                "gender" => $Gender,
+                "adminDate" => $Admin_Date,
+                "faculty" => $Faculty_Name,
+                "level" => $Level_Name,
+                "username" => $Username,
+                "imageUrl" => $Image
+            ];
+            array_push($this->model->output['teacherProfile'],$teacher_item);
+        }
+        TeacherResource::showData($this->model);
+    }
+
 }

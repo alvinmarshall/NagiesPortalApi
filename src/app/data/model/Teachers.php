@@ -240,4 +240,17 @@ class Teachers extends BaseModel implements IDataAccess
         return null;
     }
 
+    function getTeacherDetails()
+    {
+        $this->output['type'] = 'TeacherProfile';
+        $id = Authentication::getDecodedData()['id'];
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT id, Teachers_No, Teachers_Name, Dob, Gender, Contact, Admin_Date, Faculty_Name, Level_Name,
+                Username, Image FROM teachers WHERE id = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $id);
+        return $stmt;
+
+    }
+
 }
