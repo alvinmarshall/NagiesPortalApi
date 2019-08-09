@@ -69,12 +69,12 @@ class UsersController extends BaseController
         switch ($userType) {
             case 'parent':
                 $check_username = $this->model->verifyParentUsername($username, $password, 'student');
-                $this->prepareToAuthenticate($check_username, $password, $this->model);
+                $this->prepareToAuthenticate($check_username, $password, $this->model, $userType);
                 break;
 
             case 'teacher':
                 $check_username = $this->model->verifyTeacherUsername($username, 'teachers');
-                $this->prepareToAuthenticate($check_username, $password, $this->model);
+                $this->prepareToAuthenticate($check_username, $password, $this->model, $userType);
                 break;
             default:
                 null;
@@ -87,7 +87,7 @@ class UsersController extends BaseController
      * @param $password
      * @param Users $model
      */
-    private function prepareToAuthenticate($checkUsername, $password, Users $model)
+    private function prepareToAuthenticate($checkUsername, $password, Users $model, $role)
     {
         if ($checkUsername && ($password == $model::$password)) {
             $jwt = array(
@@ -103,13 +103,15 @@ class UsersController extends BaseController
                 "full_name" => $model::$full_name,
                 "username" => $model::$user_name,
                 "image" => $model::$image,
-                "level" => $model::$level
+                "level" => $model::$level,
+                "role" => $role
             );
             $model->output['status'] = 200;
             $model->output['message'] = 'Login Successful';
             $model->output['uuid'] = $model->id;
             $model->output['imageUrl'] = $model::$image;
             $model->output['token'] = Authentication::encodeJWTToken($jwt, $user_data);
+            $model->output['role'] = $role;
             echo json_encode($model->output);
 
         } else {

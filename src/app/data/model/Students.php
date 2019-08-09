@@ -102,7 +102,7 @@ class Students extends BaseModel implements IDataAccess
                         SET 
                             Students_No = :sender,
                             Students_Name = :name,
-                            Message = :content,
+                            Message = :message,
                             Level_Name = :level,
                             Message_Date = :date,
                             Guardian_Name = :guardian,
@@ -111,8 +111,8 @@ class Students extends BaseModel implements IDataAccess
                         ";
         $this->error = [];
         $stmt = $this->dbConn->prepare($query);
-        $field = ['sender', 'name', 'content', 'level', 'date', 'guardian', 'contact', 'teacher'];
-        $input = [$data['sender'], $data['name'], $complaintData['content'],
+        $field = ['sender', 'name', 'message', 'level', 'date', 'guardian', 'contact', 'teacher'];
+        $input = [$data['sender'], $data['name'], $complaintData['message'],
             $data['level'], $date, $data['guardian'], $data['contact'], $data['teacher']];
 
         $isInputValid = $this->validateInput($field, $input);

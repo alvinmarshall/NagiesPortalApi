@@ -46,6 +46,11 @@ class Actions
     function setTeachersAction()
     {
         if ($this->isUserAuthenticated()) {
+            $role = Authentication::getDecodedData()['role'];
+            if ($role != AppConstant::USER_TEACHER) {
+                $this->showNotAuthenticatedMessage();
+                return;
+            }
             switch ($this->request) {
                 case '/api/teachers':
                     if ($this->requestMethod == 'GET') {
@@ -132,6 +137,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/teachers/profile":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getTeacherProfile();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -143,6 +156,11 @@ class Actions
     function setStudentAction()
     {
         if ($this->isUserAuthenticated()) {
+            $role = Authentication::getDecodedData()['role'];
+            if ($role != AppConstant::USER_PARENT) {
+                $this->showNotAuthenticatedMessage();
+                return;
+            }
             switch ($this->request) {
                 case "/api/students":
                     if ($this->requestMethod == 'GET') {
@@ -296,8 +314,9 @@ class Actions
                 if ($this->requestMethod == 'POST') {
                     $notificationBody = [
                         'deviceId' => self::$data->deviceId ?? null,
-                        'content' => self::$data->content ?? null,
-                        'title' => self::$data->title ?? null
+                        'content' => self::$data->message ?? null,
+                        'title' => self::$data->title ?? null,
+                        'type' => self::$data->type??null
                     ];
                     $this->controller->single($notificationBody);
                     return;
@@ -308,8 +327,9 @@ class Actions
                 if ($this->requestMethod == 'POST') {
                     $notificationBody = [
                         'groupId' => self::$data->groupId ?? null,
-                        'content' => self::$data->content ?? null,
-                        'title' => self::$data->title ?? null
+                        'content' => self::$data->message ?? null,
+                        'title' => self::$data->title ?? null,
+                        'type' => self::$data->type??null
                     ];
                     $this->controller->group($notificationBody);
                     return;
@@ -320,8 +340,9 @@ class Actions
                 if ($this->requestMethod == 'POST') {
                     $notificationBody = [
                         'topic' => self::$data->topic ?? null,
-                        'content' => self::$data->content ?? null,
-                        'title' => self::$data->title ?? null
+                        'message' => self::$data->message ?? null,
+                        'title' => self::$data->title ?? null,
+                        'type' => self::$data->type??null
                     ];
                     $this->controller->topic($notificationBody);
                     return;
@@ -333,8 +354,9 @@ class Actions
                 if ($this->requestMethod == 'POST') {
                     $notificationBody = [
                         'condition' => self::$data->condition ?? null,
-                        'content' => self::$data->content ?? null,
-                        'title' => self::$data->title ?? null
+                        'content' => self::$data->message ?? null,
+                        'title' => self::$data->title ?? null,
+                        'type' => self::$data->type??null
                     ];
                     $this->controller->topic($notificationBody, true);
                     return;

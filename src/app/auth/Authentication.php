@@ -68,6 +68,7 @@ class Authentication
              * @var string $level
              * @var string $image
              * @var string $exp
+             * @var string $role
              */
             extract($user_data);
             $token = array(
@@ -80,7 +81,8 @@ class Authentication
                     "full_name" => $full_name,
                     "username" => $username,
                     "image" => $image,
-                    "level" => $level
+                    "level" => $level,
+                    "role" => $role
                 )
             );
             $encode = JWT::encode($token, $key);
@@ -111,7 +113,8 @@ class Authentication
             "full_name" => $decode->data->full_name,
             "username" => $decode->data->username,
             "image" => $decode->data->image,
-            "level" => $decode->data->level
+            "level" => $decode->data->level,
+            "role" => $decode->data->role
         ];
     }
 

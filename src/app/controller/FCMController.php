@@ -24,11 +24,15 @@ class FCMController
     function single(array $data)
     {
         $this->fcmService->sendTargetDevice($data);
+        if ($this->fcmService->getOutput() == null) return;
+        echo json_encode($this->fcmService->getOutput());
     }
 
     function group(array $data)
     {
         $this->fcmService->sendGroupMessaging($data);
+        if ($this->fcmService->getOutput() == null) return;
+        echo json_encode($this->fcmService->getOutput());
     }
 
     function topic(array $data, bool $condition = false)
@@ -38,5 +42,7 @@ class FCMController
             return;
         }
         $this->fcmService->sendTopicMessaging($data);
+        if ($this->fcmService->getOutput() == null) return;
+        echo json_encode($this->fcmService->getOutput());
     }
 }

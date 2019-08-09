@@ -196,15 +196,15 @@ class Teachers extends BaseModel implements IDataAccess
         $query = "INSERT INTO message
                         SET 
                             Message_BY = :sender,
-                            Message = :content,
+                            Message = :message,
                             Message_Level = :level,
                             M_Date = :date
                         ";
         $this->error = [];
         $stmt = $this->dbConn->prepare($query);
-        $field = ['sender', 'content', 'level', 'date'];
-        $input = [$data['username'], $messageData['content'], $data['level'], $date];
-
+        $field = ['sender', 'message', 'level', 'date'];
+        $input = [$data['username'], $messageData['message'], $data['level'], $date];
+        $this->output['level'] = $data['level'];
         $isInputValid = $this->validateInput($field, $input);
         if ($isInputValid) {
             return $this->prepareToInsertData($stmt, $input, $field);
@@ -238,6 +238,19 @@ class Teachers extends BaseModel implements IDataAccess
             return $item;
         }
         return null;
+    }
+
+    function getTeacherDetails()
+    {
+        $this->output['type'] = 'TeacherProfile';
+        $id = Authentication::getDecodedData()['id'];
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT id, Teachers_No, Teachers_Name, Dob, Gender, Contact, Admin_Date, Faculty_Name, Level_Name,
+                Username, Image FROM teachers WHERE id = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $id);
+        return $stmt;
+
     }
 
 }

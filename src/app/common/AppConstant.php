@@ -20,4 +20,6 @@ class AppConstant
     const IOC_TEACHERS_MODEL = 'teachers.model';
     const IOC_USER_MODEL = 'users.model';
     const IOC_FCM_SERVICE = 'fcm.service';
+    const USER_PARENT = 'parent';
+    const USER_TEACHER = 'teacher';
 }
