@@ -196,15 +196,15 @@ class Teachers extends BaseModel implements IDataAccess
         $query = "INSERT INTO message
                         SET 
                             Message_BY = :sender,
-                            Message = :content,
+                            Message = :message,
                             Message_Level = :level,
                             M_Date = :date
                         ";
         $this->error = [];
         $stmt = $this->dbConn->prepare($query);
-        $field = ['sender', 'content', 'level', 'date'];
-        $input = [$data['username'], $messageData['content'], $data['level'], $date];
-
+        $field = ['sender', 'message', 'level', 'date'];
+        $input = [$data['username'], $messageData['message'], $data['level'], $date];
+        $this->output['level'] = $data['level'];
         $isInputValid = $this->validateInput($field, $input);
         if ($isInputValid) {
             return $this->prepareToInsertData($stmt, $input, $field);

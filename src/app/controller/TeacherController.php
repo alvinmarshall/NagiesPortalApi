@@ -92,12 +92,14 @@ class TeacherController extends BaseController
              * @var string $Message_Level
              * @var string $M_Read
              * @var string $Message
+             * @var string $M_Date
              */
             $message_item = [
                 'sender' => $Message_BY,
                 'level' => $Message_Level,
                 'content' => $Message,
-                'status' => $M_Read
+                'status' => $M_Read,
+                'date' => $M_Date
             ];
             array_push($this->model->output['messages'], $message_item);
         }
@@ -264,15 +266,17 @@ class TeacherController extends BaseController
     {
         if (!isset($data)) return;
         $message_data = [
-            'content' => $data->content ?? null
+            'message' => $data->message ?? null
         ];
         if ($this->model->sendMessage($message_data)) {
             $this->model->output['id'] = $this->model->id;
             $this->model->output['errors'] = $this->model->error;
-            TeacherResource::showData($this->model);
             $model = ServiceContainer::inject()->get(AppConstant::IOC_FCM_SERVICE);
-            $msg = ['title' => 'Message from teacher', 'content' => $message_data['content'], 'topic' => 'global'];
+            $msg = ['title' => 'Message from teacher', 'message' => $message_data['message'],
+                'topic' => 'parent', 'type' => 'message'];
             $model->sendTopicMessaging($msg);
+            $this->model->output['fcm'] = $model->getOutput();
+            TeacherResource::showData($this->model);
         } else {
             TeacherResource::showBadRequest($this->model);
         }
@@ -302,21 +306,23 @@ class TeacherController extends BaseController
              * @var string $Faculty_Name
              * @var string $Image
              * @var string $Gender
+             * @var string $Contact
              * @var string $id
              */
             $teacher_item = [
-                "id" => $id,
+                "uid" => $id,
                 "ref" => $Teachers_No,
                 "name" => $Teachers_Name,
                 "dob" => $Dob,
                 "gender" => $Gender,
-                "adminDate" => $Admin_Date,
-                "faculty" => $Faculty_Name,
+                "contact" => $Contact,
+                "admissionDate" => $Admin_Date,
+                "facultyName" => $Faculty_Name,
                 "level" => $Level_Name,
                 "username" => $Username,
                 "imageUrl" => $Image
             ];
-            array_push($this->model->output['teacherProfile'],$teacher_item);
+            array_push($this->model->output['teacherProfile'], $teacher_item);
         }
         TeacherResource::showData($this->model);
     }

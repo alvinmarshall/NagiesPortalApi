@@ -34,15 +34,17 @@ class StudentController extends BaseController
     {
         if (!isset($data)) return;
         $complaint_data = [
-            'content' => $data->content ?? null
+            'message' => $data->message ?? null
         ];
         if ($this->model->sendComplaints($complaint_data)) {
             $this->model->output['id'] = $this->model->id;
             $this->model->output['errors'] = $this->model->error;
-            StudentResource::showData($this->model);
             $model = ServiceContainer::inject()->get(AppConstant::IOC_FCM_SERVICE);
-            $msg = ['title' => 'Complaints from parent', 'content' => $complaint_data['content'], 'topic' => 'global'];
+            $msg = ['title' => 'Complaints from parent', 'message' => $complaint_data['message'],
+                'topic' => 'teachers', 'type' => 'complaint'];
             $model->sendTopicMessaging($msg);
+            $this->model->output['fcm'] = $model->getOutput();
+            StudentResource::showData($this->model);
         } else {
             StudentResource::showBadRequest($this->model);
         }
@@ -370,12 +372,14 @@ class StudentController extends BaseController
              * @var string $Message_Level
              * @var string $M_Read
              * @var string $Message
+             * @var string $M_Date
              */
             $message_item = [
                 'sender' => $Message_BY,
                 'level' => $Message_Level,
                 'content' => $Message,
-                'read' => $M_Read
+                'read' => $M_Read,
+                "date" => $M_Date
             ];
             array_push($this->model->output['messages'], $message_item);
         }

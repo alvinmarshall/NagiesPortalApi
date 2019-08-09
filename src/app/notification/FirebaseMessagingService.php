@@ -11,6 +11,7 @@ class FirebaseMessagingService implements INotification
 {
     protected $header;
     protected $curl;
+    private $output;
 
     public function __construct()
     {
@@ -29,24 +30,23 @@ class FirebaseMessagingService implements INotification
     function sendTargetDevice(array $data)
     {
         if ($data == null) return;
-        $field = ['deviceId', 'content', 'title'];
-        $input = [$data['deviceId'], $data['content'], $data['title']];
+        $field = ['deviceId', 'message', 'title','type'];
+        $input = [$data['deviceId'], $data['message'], $data['title'],$data['type']];
         if (!Validator::validateInput($field, $input)) return;
         $fcmBody = [
             "to" => $data['deviceId'],
-            "notification" => [
-                "body" => $data['content'],
+            "data" => [
+                "message" => $data['message'],
                 "title" => $data['title'],
-                "sound" => "default",
+                "type" => $data['type'],
                 "vibrate" => 1
             ]
         ];
         $fcmBody = json_encode($fcmBody);
-//        echo $fcmBody;
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fcmBody);
         $results = curl_exec($this->curl);
         curl_close($this->curl);
-        echo $results;
+        $this->output = json_decode($results,false);
     }
 
     function sendGroupMessaging(array $data)
@@ -54,66 +54,71 @@ class FirebaseMessagingService implements INotification
         if ($data == null) return;
         if (!Validator::isTypeAnArray($data['groupId'], 'groupId')) return;
         if (!Validator::validateArrayInput($data['groupId'], 'groupId')) return;
-        $field = ['content', 'title'];
-        $input = [$data['content'], $data['title']];
+        $field = ['message', 'title','type'];
+        $input = [$data['message']??'', $data['title']??'',$data['type']??''];
         if (!Validator::validateInput($field, $input)) return;
         $fcmBody = [
             "registration_ids" => $data['groupId'],
-            "notification" => [
-                "body" => $data['content'],
-                "title" => $data['title']
+            "data" => [
+                "message" => $data['message'],
+                "title" => $data['title'],
+                'type' => $data['type']
             ]
         ];
         $fcmBody = json_encode($fcmBody);
-//        echo $fcmBody;
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fcmBody);
         $results = curl_exec($this->curl);
         curl_close($this->curl);
-        echo $results;
+        $this->output = json_decode($results,false);
     }
 
     function sendTopicMessaging(array $data)
     {
         if ($data == null) return;
-        $field = ['topic', 'content', 'title'];
-        $input = [$data['topic'], $data['content'], $data['title']];
+        $field = ['topic', 'message', 'title','type'];
+        $input = [$data['topic']??'', $data['message']??'', $data['title']??'',$data['type']??''];
         if (!Validator::validateInput($field, $input)) return;
         $fcmBody = [
             "to" => '/topics/' . $data['topic'],
-            "notification" => [
-                "body" => $data['content'],
+            "data" => [
+                "message" => $data['message'],
                 "title" => $data['title'],
-                "sound" => "default",
+                "type" => $data['type'],
                 "vibrate" => 1
             ]
         ];
         $fcmBody = json_encode($fcmBody);
-//        echo $fcmBody;
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fcmBody);
         $results = curl_exec($this->curl);
         curl_close($this->curl);
-        echo $results;
+        $this->output = json_decode($results,false);
     }
 
     function sendConditionTopicMessaging(array $data)
     {
         if ($data == null) return;
-        $field = ['condition', 'content', 'title'];
-        $input = [$data['condition'], $data['content'], $data['title']];
+        $field = ['condition', 'message', 'title','type'];
+        $input = [$data['condition']??'', $data['message']??'', $data['title'],$data['type']??''];
         if (!Validator::validateInput($field, $input)) return;
         $fcmBody = [
             "condition" => $data['condition'],
-            "notification" => [
-                "body" => $data['content'],
+            "data" => [
+                "message" => $data['message'],
                 "title" => $data['title'],
-                "sound" => "default"
+                "type" => $data['type']
             ]
         ];
         $fcmBody = json_encode($fcmBody);
-//        echo $fcmBody;
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $fcmBody);
         $results = curl_exec($this->curl);
         curl_close($this->curl);
-        echo $results;
+        $this->output = json_decode($results,false);
+    }
+
+    /**
+     * @return mixed
+     */
+    function getOutput(){
+        return $this->output;
     }
 }
