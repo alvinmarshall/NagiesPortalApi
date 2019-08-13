@@ -453,6 +453,7 @@ class StudentController extends BaseController
         header('Accept-Ranges: bytes');
         header('Content-Encoding: none');
         header("Content-Type: $content_type");
+        header("Content-Length: ".(string)(FILESIZE($path)));
         readfile($path);
     }
 
