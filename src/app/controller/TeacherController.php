@@ -16,7 +16,7 @@ use PDOStatement;
 
 class TeacherController extends BaseController
 {
-    private $model;
+    protected $model;
 
     public function __construct()
     {
@@ -237,7 +237,7 @@ class TeacherController extends BaseController
      */
     function changePassword($credentials)
     {
-        $id = Authentication::getDecodedData()['id'];
+        $id = Authentication::getDecodedData()['id'] ?? null;
         $old_password = $credentials['old_password'] ?? null;
         $new_password = $credentials['new_password'] ?? null;
         $confirm_password = $credentials['confirm_password'] ?? null;

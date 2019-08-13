@@ -66,7 +66,7 @@ class StudentControllerTest extends TestCase
         $response = $this->client->post('students/complaints', [
             'headers' => ['Authorization' => "Bearer " . $this->token],
             'json' => [
-                'content' => 'unit testing'
+                'message' => 'unit testing'
             ]
         ]);
         self::assertEquals(200, $response->getStatusCode());
