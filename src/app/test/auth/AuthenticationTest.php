@@ -5,16 +5,19 @@ namespace App\test\auth;
 use App\auth\Authentication;
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+
 class AuthenticationTest extends TestCase
 {
 
     protected $token;
+    protected $fakeToken;
 
     protected function setUp(): void
     {
-        $env = Dotenv::create(__DIR__ . '/../../../Portal/');
+        $env = Dotenv::create(__DIR__ . '/../../../../');
         $env->load();
-        $this->token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9pbmZvcmRhc2doLmNvbSIsImF1ZCI6Imh0dHA6XC9cL2luZm9yZGFzZ2guY29tIiwiaWF0IjoxNTY0MjQ5NzcyLCJuYmYiOjE1NjQyNDk3NzIsImRhdGEiOnsiaWQiOi0xLCJmdWxsX25hbWUiOiJ0ZXN0X25hbWUiLCJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpbWFnZSI6InRlc3RfaW1hZ2UiLCJsZXZlbCI6InRlc3RfbGV2ZWwifX0.hDm_nDwvDyv7FTi8ZzsJjB0shYzaW7VliqdYObV8H7A";
+        $this->fakeToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9pbmZvcmRhc2doLmNvbSIsImF1ZCI6Imh0dHA6XC9cL2luZm9yZGFzZ2guY29tIiwiaWF0IjoxNTY1NDc4MzE5LCJuYmYiOjE1NjU0NzgzMTksImRhdGEiOnsiaWQiOi0xLCJmdWxsX25hbWUiOiJ0ZXN0X25hbWUiLCJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpbWFnZSI6InRlc3RfaW1hZ2UiLCJsZXZlbCI6InRlc3RfbGV2ZWwiLCJyb2xlIjoidGVzdF9yb2xlIn19.el0HHHuMkcAuVoGbP2BLrr96hgpGCjOhoii7rxxyHQi";
+        $this->token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9pbmZvcmRhc2doLmNvbSIsImF1ZCI6Imh0dHA6XC9cL2luZm9yZGFzZ2guY29tIiwiaWF0IjoxNTY1NDc4MzE5LCJuYmYiOjE1NjU0NzgzMTksImRhdGEiOnsiaWQiOi0xLCJmdWxsX25hbWUiOiJ0ZXN0X25hbWUiLCJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpbWFnZSI6InRlc3RfaW1hZ2UiLCJsZXZlbCI6InRlc3RfbGV2ZWwiLCJyb2xlIjoidGVzdF9yb2xlIn19.el0HHHuMkcAuVoGbP2BLrr96hgpGCjOhoii7rxxyHQI";
     }
 
     public function testIsJWTTokenValid()
@@ -34,6 +37,8 @@ class AuthenticationTest extends TestCase
         self::assertEquals(Authentication::getDecodedData()['username'], 'test_username');
         self::assertEquals(Authentication::getDecodedData()['image'], 'test_image');
         self::assertEquals(Authentication::getDecodedData()['level'], 'test_level');
+        self::assertEquals(Authentication::getDecodedData()['role'], 'test_role');
+
     }
 
     public function testEncodeJWTToken()
@@ -50,10 +55,20 @@ class AuthenticationTest extends TestCase
             "full_name" => 'test_name',
             "username" => 'test_username',
             "image" => 'test_image',
-            "level" => 'test_level'
+            "level" => 'test_level',
+            'role' => 'test_role'
         );
 
         $token = Authentication::encodeJWTToken($jwt, $user_data);
         self::assertNotNull($token);
     }
+
+    function testTokenSignatureVerificationException(){
+        Authentication::isJWTTokenValid($this->fakeToken);
+        $expected =  Authentication::$error;
+        $actual = 'Signature verification failed';
+        self::assertEquals($expected,$actual);
+    }
+
+
 }
