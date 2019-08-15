@@ -24,4 +24,6 @@ class AppConstant
     const USER_TEACHER = 'teacher';
     const TABLE_CIRCULAR = 'circular';
     const DIR_CIRCULAR = './circular/uploads/';
+    const TABLE_BILLING = 'billing';
+    const DIR_BILLING = './billing/uploads/';
 }

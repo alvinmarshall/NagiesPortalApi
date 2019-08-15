@@ -153,6 +153,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/teachers/upload_billing":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->uploadFile(AppConstant::TABLE_BILLING, AppConstant::DIR_BILLING);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -281,6 +289,14 @@ class Actions
                 case "/api/students/circular":
                     if ($this->requestMethod == 'GET') {
                         $this->controller->getCircular();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case "/api/students/billing":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getBilling();
                         return;
                     }
                     $this->showBadRequestMessage();

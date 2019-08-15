@@ -363,4 +363,15 @@ class Students extends BaseModel implements IDataAccess
         $stmt->bindParam(1, $faculty);
         return $stmt;
     }
+
+    function getStudentBilling()
+    {
+        $this->output['type'] = 'Billing';
+        $id = Authentication::getDecodedData()['id'] ?? null;
+        $query = "SELECT id, Students_No, Students_Name, Uploader, Bill_File, Report_Date 
+                FROM billing WHERE Students_No = ? ORDER BY Report_Date DESC ";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $id);
+        return $stmt;
+    }
 }

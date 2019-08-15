@@ -24,6 +24,7 @@ class Router
             "/api/students/download" => "StudentController@getFile",
             "/api/students/teachers" => "StudentController@getTeachers",
             "/api/students/circular" => "StudentController@getCircular",
+            "/api/students/billing" => "StudentController@getBilling",
 
 
             /**Users routes*/
@@ -44,6 +45,7 @@ class Router
             "/api/teachers/send_message" => "TeacherController@sendMessage",
             "/api/teachers/profile" => "TeacherController@getTeacherProfile",
             "/api/teachers/upload_circular" => "TeacherController@sendCircular",
+            "/api/teachers/upload_billing" => "TeacherController@sendBilling",
 
             //firebase messaging route
             "/api/message/single" => "FCMController@single",

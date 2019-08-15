@@ -5,6 +5,7 @@ namespace App\data\model;
 
 
 use App\auth\Authentication;
+use App\common\AppConstant;
 use App\config\Database;
 use App\data\IDataAccess;
 use PDO;
@@ -53,7 +54,7 @@ class Teachers extends BaseModel implements IDataAccess
     function getAssignmentType($table, $format)
     {
         $this->output['type'] = 'Assignment' . $format;
-        /** @noinspection SqlDialectInspection */
+        /** @noinspection SqlResolve */
         $query = "SELECT
                     id, Students_No, Students_Name,
                     Teachers_Email, Report_File, Report_Date FROM " . $table;
@@ -100,15 +101,24 @@ class Teachers extends BaseModel implements IDataAccess
      */
     function saveUploadFilePath($format, $destination, $dbTable): bool
     {
-        if ($dbTable == 'circular') {
-            $data = [
-                'cid' => isset($_POST['cid']) ? $_POST['cid'] : null,
-                'facultyName' => isset($_POST['facultyName']) ? $_POST['facultyName'] : null,
-                'fileName' => $destination
-            ];
-            return $this->saveCircularFileInfo($data, $dbTable);
+        switch ($dbTable) {
+            case AppConstant::TABLE_CIRCULAR:
+                $data = [
+                    'cid' => isset($_POST['cid']) ? $_POST['cid'] : null,
+                    'facultyName' => isset($_POST['facultyName']) ? $_POST['facultyName'] : null,
+                    'fileName' => $destination
+                ];
+                return $this->saveCircularFileInfo($data, $dbTable);
+            case AppConstant::TABLE_BILLING:
+                $data = [
+                    'studentNo' => isset($_POST['studentNo']) ? $_POST['studentNo'] : null,
+                    'fileName' => $destination ?? null
+                ];
+                return $this->saveBillingFileInfo($data, $dbTable);
+            default:
+                return $this->saveStudentFileInfo($format, $destination, $dbTable);
         }
-        return $this->saveStudentFileInfo($format, $destination, $dbTable);
+
     }
 
     private function bindAllParams(PDOStatement $stmt, $params, $fields)
@@ -229,7 +239,7 @@ class Teachers extends BaseModel implements IDataAccess
 
     private function saveCircularFileInfo($data, $table)
     {
-        /** @noinspection SqlDialectInspection */
+        /** @noinspection SqlResolve */
         $query = "INSERT INTO $table 
                     SET 
                         CID = :cid,
@@ -243,7 +253,7 @@ class Teachers extends BaseModel implements IDataAccess
         $field = ['cid', 'facultyName', 'date', 'fileName'];
         $input = [$data['cid'], $data['facultyName'], $date, $data['fileName']];
         if (!$this->validateInput($field, $input)) return false;
-        if (!$this->prepareToInsertData($stmt, $input, $field)){
+        if (!$this->prepareToInsertData($stmt, $input, $field)) {
             return $this->prepareToInsertData($stmt, $input, $field);
         }
         return $this->prepareToInsertData($stmt, $input, $field);
@@ -276,7 +286,7 @@ class Teachers extends BaseModel implements IDataAccess
 
         }
 
-        /** @noinspection SqlDialectInspection */
+        /** @noinspection SqlResolve */
         $query = "INSERT INTO ${table}
                         SET 
                             Students_No = :index,
@@ -294,6 +304,60 @@ class Teachers extends BaseModel implements IDataAccess
             return $this->prepareToInsertData($stmt, $input, $field);
         }
         return false;
+    }
+
+    function saveBillingFileInfo(array $data, $table)
+    {
+        $username = Authentication::getDecodedData()['username'] ?? null;
+        $student_no = isset($data['studentNo']) ? $data['studentNo'] : null;
+        $student_name = null;
+        if (!empty($student_no)) {
+            $student_name = $this->getStudentInformation($student_no)[0]['studentName'] ?? null;
+        }
+
+        /** @noinspection SqlResolve */
+        $query = "INSERT INTO $table
+                    SET
+                        Students_No = :studentNo,
+                        Students_Name = :studentName,
+                        Uploader = :username,
+                        Bill_File = :destination,
+                        Report_Date = :date
+                    ";
+        $this->output['type'] = 'Billing';
+        $stmt = $this->dbConn->prepare($query);
+        $date = date('Y-m-d');
+        $field = ['studentNo', 'studentName', 'username', 'destination', 'date'];
+        $input = [$data['studentNo'], $student_name, $username, $data['fileName'], $date];
+        if (!$this->validateInput($field, $input)) return false;
+        if (!$this->prepareToInsertData($stmt, $input, $field)) {
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return $this->prepareToInsertData($stmt, $input, $field);
+    }
+
+    private function getStudentInformation($studentNo)
+    {
+        $item = [];
+        if (empty($studentNo)) return $item;
+        $query = "SELECT Students_Name FROM student WHERE Students_No = ?";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $studentNo);
+        $stmt->execute();
+        $num = $stmt->rowCount();
+        if ($num == 0) return $item;
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $Students_Name
+             */
+            $student_item = [
+                'studentName' => $Students_Name
+            ];
+            array_push($item, $student_item);
+        }
+        return $item;
     }
 
 }
