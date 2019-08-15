@@ -42,6 +42,7 @@ class Router
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
             "/api/teachers/send_message" => "TeacherController@sendMessage",
             "/api/teachers/profile" => "TeacherController@getTeacherProfile",
+            "/api/teachers/upload_circular" => "TeacherController@sendCircular",
 
             //firebase messaging route
             "/api/message/single" => "FCMController@single",

@@ -13,6 +13,7 @@ use App\resource\TeacherResource;
 use App\ServiceContainer;
 use PDO;
 use PDOStatement;
+use function GuzzleHttp\Psr7\str;
 
 class TeacherController extends BaseController
 {
@@ -48,9 +49,9 @@ class TeacherController extends BaseController
         // TODO: Implement delete() method.
     }
 
-    function uploadFile(string $dbTable)
+    function uploadFile(string $dbTable, $dir = '')
     {
-        $upload_dir = './students/uploads/';
+        $upload_dir = empty($dir) ? './students/uploads/' : $dir;
         if (isset($_FILES['pdf']['name'])) {
             DirectoryUtils::createDir($upload_dir);
             $file_info = pathinfo($_FILES['pdf']['name']);
@@ -68,7 +69,7 @@ class TeacherController extends BaseController
             $this->prepareToUploadFile('image', $destination, $upload_dir, $file_name, $extension, $dbTable);
 
         } else {
-            echo json_encode(array('message' => 'No file to upload'));
+            echo json_encode(array('message' => 'No file (image,pdf) to upload'));
         }
     }
 
