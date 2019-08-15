@@ -25,5 +25,5 @@ class AppConstant
     const TABLE_CIRCULAR = 'circular';
     const DIR_CIRCULAR = './circular/uploads/';
     const TABLE_BILLING = 'billing';
-    const DIR_BILLING = './billing/uploads';
+    const DIR_BILLING = './billing/uploads/';
 }

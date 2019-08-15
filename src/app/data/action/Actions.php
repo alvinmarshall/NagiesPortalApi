@@ -293,6 +293,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/students/billing":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getBilling();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }

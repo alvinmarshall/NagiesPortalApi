@@ -552,4 +552,38 @@ class StudentController extends BaseController
         }
         StudentResource::showData($this->model);
     }
+
+    function getBilling()
+    {
+        $result = $this->model->getStudentBilling();
+        if ($result == null) return;
+        $result->execute();
+        $num = $result->rowCount();
+        $this->model->output['message'] = 'Billing Information';
+        $this->model->output['count'] = $num;
+        $this->model->output['Billing'] = [];
+        if ($num == 0) {
+            StudentResource::showNoData($this->model);
+            return;
+        }
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $id
+             * @var string $CID
+             * @var string $FileName
+             * @var string $CID_Date
+             */
+            $billing_item = [
+                'id' => $id,
+                'refNo' => $Students_No,
+                'studentName' => $Students_Name,
+                'sender' => $Uploader,
+                'fileUrl' => $Bill_File,
+                'date' => $Report_Date
+            ];
+            array_push($this->model->output['Billing'], $billing_item);
+        }
+        StudentResource::showData($this->model);
+    }
 }
