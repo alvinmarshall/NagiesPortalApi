@@ -153,6 +153,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/teachers/upload_billing":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->uploadFile(AppConstant::TABLE_BILLING, AppConstant::DIR_BILLING);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
