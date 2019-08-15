@@ -148,7 +148,7 @@ class Actions
 
                 case "/api/teachers/upload_circular":
                     if ($this->requestMethod == 'POST') {
-                        $this->controller->uploadFile(AppConstant::TABLE_CIRCULAR,AppConstant::DIR_CIRCULAR);
+                        $this->controller->uploadFile(AppConstant::TABLE_CIRCULAR, AppConstant::DIR_CIRCULAR);
                         return;
                     }
                     $this->showBadRequestMessage();
@@ -273,6 +273,14 @@ class Actions
                 case "/api/students/teachers":
                     if ($this->requestMethod == 'GET') {
                         $this->controller->getTeachers();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
+
+                case "/api/students/circular":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getCircular();
                         return;
                     }
                     $this->showBadRequestMessage();

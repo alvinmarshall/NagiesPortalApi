@@ -23,6 +23,7 @@ class Router
             "/api/students/profile" => "StudentController@getProfile",
             "/api/students/download" => "StudentController@getFile",
             "/api/students/teachers" => "StudentController@getTeachers",
+            "/api/students/circular" => "StudentController@getCircular",
 
 
             /**Users routes*/
