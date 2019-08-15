@@ -453,7 +453,7 @@ class StudentController extends BaseController
         header('Accept-Ranges: bytes');
         header('Content-Encoding: none');
         header("Content-Type: $content_type");
-        header("Content-Length: ".(string)(FILESIZE($path)));
+        header("Content-Length: " . (string)(FILESIZE($path)));
         readfile($path);
     }
 
@@ -517,6 +517,38 @@ class StudentController extends BaseController
                 "imageUrl" => $Image
             ];
             array_push($this->model->output['studentTeachers'], $teacher_item);
+        }
+        StudentResource::showData($this->model);
+    }
+
+    function getCircular()
+    {
+        $result = $this->model->getStudentCircular();
+        if ($result == null) return;
+        $result->execute();
+        $num = $result->rowCount();
+        $this->model->output['message'] = 'Circular Message';
+        $this->model->output['count'] = $num;
+        $this->model->output['Circular'] = [];
+        if ($num == 0) {
+            StudentResource::showNoData($this->model);
+            return;
+        }
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $id
+             * @var string $CID
+             * @var string $FileName
+             * @var string $CID_Date
+             */
+            $circular_item = [
+                'id' => $id,
+                'cid' => $CID,
+                'fileUrl' => $FileName,
+                'date' => $CID_Date
+            ];
+            array_push($this->model->output['Circular'], $circular_item);
         }
         StudentResource::showData($this->model);
     }

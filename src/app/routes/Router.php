@@ -23,6 +23,7 @@ class Router
             "/api/students/profile" => "StudentController@getProfile",
             "/api/students/download" => "StudentController@getFile",
             "/api/students/teachers" => "StudentController@getTeachers",
+            "/api/students/circular" => "StudentController@getCircular",
 
 
             /**Users routes*/
@@ -42,6 +43,7 @@ class Router
             "/api/teachers/upload_report_image" => "TeacherController@sendReportImage",
             "/api/teachers/send_message" => "TeacherController@sendMessage",
             "/api/teachers/profile" => "TeacherController@getTeacherProfile",
+            "/api/teachers/upload_circular" => "TeacherController@sendCircular",
 
             //firebase messaging route
             "/api/message/single" => "FCMController@single",

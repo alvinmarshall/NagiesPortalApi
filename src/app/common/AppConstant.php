@@ -22,4 +22,6 @@ class AppConstant
     const IOC_FCM_SERVICE = 'fcm.service';
     const USER_PARENT = 'parent';
     const USER_TEACHER = 'teacher';
+    const TABLE_CIRCULAR = 'circular';
+    const DIR_CIRCULAR = './circular/uploads/';
 }

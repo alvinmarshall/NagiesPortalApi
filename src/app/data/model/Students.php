@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlResolve */
 
 
 namespace App\data\model;
@@ -128,7 +128,7 @@ class Students extends BaseModel implements IDataAccess
         $level = Authentication::getDecodedData()['level'] ?? '';
         /** @noinspection SqlDialectInspection */
         $query = "SELECT 
-                        s.Guardian_Name,s.Guardian_No,t.Teachers_Name,s.Students_Name 
+                        s.Guardian_Name,s.Guardian_No,t.Teachers_Name,s.Students_Name ,s.Faculty_Name
                     FROM  student s,teachers t  WHERE Students_No = ? AND  t.Level_Name = ?";
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $id);
@@ -144,6 +144,7 @@ class Students extends BaseModel implements IDataAccess
                  * @var string $Guardian_No
                  * @var string $Guardian_Name
                  * @var string $Students_Name
+                 * @var string $Faculty_Name
                  */
                 $item_data = [
                     "teacher" => $Teachers_Name,
@@ -151,7 +152,8 @@ class Students extends BaseModel implements IDataAccess
                     "contact" => $Guardian_No,
                     "level" => $level,
                     "sender" => $id,
-                    "name" => $Students_Name
+                    "name" => $Students_Name,
+                    'faculty' => $Faculty_Name
                 ];
                 array_push($item, $item_data);
             }
@@ -189,7 +191,7 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " LIMIT 15";
+                            Image FROM " . $this->dbTable . " `LIMIT` 15";
 
         $stmt = $this->dbConn->prepare($query);
         return $stmt;
@@ -202,14 +204,13 @@ class Students extends BaseModel implements IDataAccess
      */
     private function getStudentsWithPaginateQuery($from, $to): PDOStatement
     {
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT
                             id, Students_No, 
                             Students_Name, Dob, Gender,
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " LIMIT ?,? ";
+                            Image FROM " . $this->dbTable . " `LIMIT` ?,? ";
 
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $from, PDO::PARAM_INT);
@@ -223,14 +224,13 @@ class Students extends BaseModel implements IDataAccess
      */
     private function getStudentQuery($id)
     {
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT
                             id, Students_No, 
                             Students_Name, Dob, Gender,
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " WHERE id = :id";
+                            Image FROM " . $this->dbTable . " `WHERE` id = :id";
 
         $stmt = $this->dbConn->prepare($query);
         $id = Validator::singleInput($id);
@@ -243,7 +243,6 @@ class Students extends BaseModel implements IDataAccess
      */
     function getTotalStudent()
     {
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT COUNT(*) AS total_rows FROM " . $this->dbTable;
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute();
@@ -314,7 +313,6 @@ class Students extends BaseModel implements IDataAccess
     {
         $level = Authentication::getDecodedData()['level'];
         $this->output['type'] = 'Assignment' . $format;
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT
                     Students_Name,
                     Teachers_Email, Report_File, Report_Date FROM  $table WHERE Students_No = ?";
@@ -333,7 +331,6 @@ class Students extends BaseModel implements IDataAccess
             return null;
         }
         $this->output['type'] = 'Messages';
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT 
                         id, Message_BY, M_Date, Message, Message_Level, M_Read
                         FROM message WHERE Message_Level = ? ORDER BY M_Date DESC ";
@@ -350,10 +347,20 @@ class Students extends BaseModel implements IDataAccess
         $this->output['type'] = 'Teachers';
         $level = Authentication::getDecodedData()['level'] ?? null;
         if ($level == null) return null;
-        /** @noinspection SqlDialectInspection */
         $query = "SELECT Teachers_No, Teachers_Name, Gender, Contact, Image FROM teachers WHERE Level_Name = ?";
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $level);
+        return $stmt;
+    }
+
+    function getStudentCircular()
+    {
+        $this->output['type'] = 'Circular';
+        $faculty = $this->getStudentInfo()[0]['faculty'];
+        $query = "SELECT c.id, c.CID, c.FileName, c.CID_Date  FROM circular c 
+                WHERE c.Faculty_Name = ? ORDER BY c.CID_Date DESC ";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $faculty);
         return $stmt;
     }
 }

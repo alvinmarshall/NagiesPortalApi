@@ -100,43 +100,15 @@ class Teachers extends BaseModel implements IDataAccess
      */
     function saveUploadFilePath($format, $destination, $dbTable): bool
     {
-        $this->output['type'] = strtoupper($format);
-        $table = $dbTable;
-        $level = Authentication::getDecodedData()['level'] ?? null;
-        $date = date('Y-m-d');
-        $name = Authentication::getDecodedData()['username'] ?? null;
-        $email = Authentication::getDecodedData()['username'] ?? null;
-        if ($dbTable == 'report' || $dbTable == 'report_png') {
-            if (isset($_POST['students_no']) && isset($_POST['students_name'])) {
-                $level = $_POST['students_no'];
-                $name = $_POST['students_name'];
-            } else {
-                $level = null;
-                $name = null;
-                $this->error['field'] = 'provide student report information fields';
-                return false;
-            }
-
+        if ($dbTable == 'circular') {
+            $data = [
+                'cid' => isset($_POST['cid']) ? $_POST['cid'] : null,
+                'facultyName' => isset($_POST['facultyName']) ? $_POST['facultyName'] : null,
+                'fileName' => $destination
+            ];
+            return $this->saveCircularFileInfo($data, $dbTable);
         }
-
-        /** @noinspection SqlDialectInspection */
-        $query = "INSERT INTO ${table}
-                        SET 
-                            Students_No = :index,
-                            Students_Name = :name,
-                            Teachers_Email = :email,
-                            Report_File = :destination,
-                            Report_Date = :date
-                        ";
-        $stmt = $this->dbConn->prepare($query);
-        $field = ['index', 'name', 'email', 'destination', 'date'];
-        $input = [$level, $name, $email, $destination, $date];
-        $this->output['message'] = 'File upload successful';
-        $this->output['format'] = $format;
-        if ($this->validateInput($field, $input)) {
-            return $this->prepareToInsertData($stmt, $input, $field);
-        }
-        return false;
+        return $this->saveStudentFileInfo($format, $destination, $dbTable);
     }
 
     private function bindAllParams(PDOStatement $stmt, $params, $fields)
@@ -147,12 +119,14 @@ class Teachers extends BaseModel implements IDataAccess
         return $stmt;
     }
 
-    private function prepareToInsertData(PDOStatement $stmt, array $inputs, array $fields): bool
+    private function prepareToInsertData(PDOStatement $stmt, array $inputs, array $fields, bool $isFile = true): bool
     {
         $this->bindAllParams($stmt, $inputs, $fields);
         try {
             $stmt->execute();
-            $this->output['path'] = $inputs[3];
+            if ($isFile) {
+                $this->output['path'] = $inputs[3];
+            }
             $this->id = $this->dbConn->lastInsertId();
             return true;
         } catch (Throwable $e) {
@@ -207,7 +181,7 @@ class Teachers extends BaseModel implements IDataAccess
         $this->output['level'] = $data['level'];
         $isInputValid = $this->validateInput($field, $input);
         if ($isInputValid) {
-            return $this->prepareToInsertData($stmt, $input, $field);
+            return $this->prepareToInsertData($stmt, $input, $field, false);
         }
         return false;
     }
@@ -251,6 +225,75 @@ class Teachers extends BaseModel implements IDataAccess
         $stmt->bindParam(1, $id);
         return $stmt;
 
+    }
+
+    private function saveCircularFileInfo($data, $table)
+    {
+        /** @noinspection SqlDialectInspection */
+        $query = "INSERT INTO $table 
+                    SET 
+                        CID = :cid,
+                        Faculty_Name = :facultyName,
+                        FileName = :fileName,
+                        CID_Date = :date
+                    ";
+        $this->output['type'] = 'Circular';
+        $stmt = $this->dbConn->prepare($query);
+        $date = date('Y-m-d');
+        $field = ['cid', 'facultyName', 'date', 'fileName'];
+        $input = [$data['cid'], $data['facultyName'], $date, $data['fileName']];
+        if (!$this->validateInput($field, $input)) return false;
+        if (!$this->prepareToInsertData($stmt, $input, $field)){
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return $this->prepareToInsertData($stmt, $input, $field);
+    }
+
+    /**
+     * @param $format
+     * @param $destination
+     * @param $dbTable
+     * @return bool
+     */
+    private function saveStudentFileInfo($format, $destination, $dbTable): bool
+    {
+        $this->output['type'] = strtoupper($format);
+        $table = $dbTable;
+        $level = Authentication::getDecodedData()['level'] ?? null;
+        $date = date('Y-m-d');
+        $name = Authentication::getDecodedData()['username'] ?? null;
+        $email = Authentication::getDecodedData()['username'] ?? null;
+        if ($dbTable == 'report' || $dbTable == 'report_png') {
+            if (isset($_POST['students_no']) && isset($_POST['students_name'])) {
+                $level = $_POST['students_no'];
+                $name = $_POST['students_name'];
+            } else {
+                $level = null;
+                $name = null;
+                $this->error['field'] = 'provide student report information fields';
+                return false;
+            }
+
+        }
+
+        /** @noinspection SqlDialectInspection */
+        $query = "INSERT INTO ${table}
+                        SET 
+                            Students_No = :index,
+                            Students_Name = :name,
+                            Teachers_Email = :email,
+                            Report_File = :destination,
+                            Report_Date = :date
+                        ";
+        $stmt = $this->dbConn->prepare($query);
+        $field = ['index', 'name', 'email', 'destination', 'date'];
+        $input = [$level, $name, $email, $destination, $date];
+        $this->output['message'] = 'File upload successful';
+        $this->output['format'] = $format;
+        if ($this->validateInput($field, $input)) {
+            return $this->prepareToInsertData($stmt, $input, $field);
+        }
+        return false;
     }
 
 }

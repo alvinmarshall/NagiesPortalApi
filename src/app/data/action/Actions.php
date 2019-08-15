@@ -145,6 +145,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/teachers/upload_circular":
+                    if ($this->requestMethod == 'POST') {
+                        $this->controller->uploadFile(AppConstant::TABLE_CIRCULAR, AppConstant::DIR_CIRCULAR);
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -269,6 +277,14 @@ class Actions
                     }
                     $this->showBadRequestMessage();
                     break;
+
+                case "/api/students/circular":
+                    if ($this->requestMethod == 'GET') {
+                        $this->controller->getCircular();
+                        return;
+                    }
+                    $this->showBadRequestMessage();
+                    break;
                 default:
                     null;
             }
@@ -316,7 +332,7 @@ class Actions
                         'deviceId' => self::$data->deviceId ?? null,
                         'content' => self::$data->message ?? null,
                         'title' => self::$data->title ?? null,
-                        'type' => self::$data->type??null
+                        'type' => self::$data->type ?? null
                     ];
                     $this->controller->single($notificationBody);
                     return;
@@ -329,7 +345,7 @@ class Actions
                         'groupId' => self::$data->groupId ?? null,
                         'content' => self::$data->message ?? null,
                         'title' => self::$data->title ?? null,
-                        'type' => self::$data->type??null
+                        'type' => self::$data->type ?? null
                     ];
                     $this->controller->group($notificationBody);
                     return;
@@ -342,7 +358,7 @@ class Actions
                         'topic' => self::$data->topic ?? null,
                         'message' => self::$data->message ?? null,
                         'title' => self::$data->title ?? null,
-                        'type' => self::$data->type??null
+                        'type' => self::$data->type ?? null
                     ];
                     $this->controller->topic($notificationBody);
                     return;
@@ -356,7 +372,7 @@ class Actions
                         'condition' => self::$data->condition ?? null,
                         'content' => self::$data->message ?? null,
                         'title' => self::$data->title ?? null,
-                        'type' => self::$data->type??null
+                        'type' => self::$data->type ?? null
                     ];
                     $this->controller->topic($notificationBody, true);
                     return;
