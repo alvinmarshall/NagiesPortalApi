@@ -253,9 +253,6 @@ class Teachers extends BaseModel implements IDataAccess
         $field = ['cid', 'facultyName', 'date', 'fileName'];
         $input = [$data['cid'], $data['facultyName'], $date, $data['fileName']];
         if (!$this->validateInput($field, $input)) return false;
-        if (!$this->prepareToInsertData($stmt, $input, $field)) {
-            return $this->prepareToInsertData($stmt, $input, $field);
-        }
         return $this->prepareToInsertData($stmt, $input, $field);
     }
 
@@ -330,9 +327,6 @@ class Teachers extends BaseModel implements IDataAccess
         $field = ['studentNo', 'studentName', 'username', 'destination', 'date'];
         $input = [$data['studentNo'], $student_name, $username, $data['fileName'], $date];
         if (!$this->validateInput($field, $input)) return false;
-        if (!$this->prepareToInsertData($stmt, $input, $field)) {
-            return $this->prepareToInsertData($stmt, $input, $field);
-        }
         return $this->prepareToInsertData($stmt, $input, $field);
     }
 

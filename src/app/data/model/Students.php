@@ -1,4 +1,6 @@
-<?php /** @noinspection SqlResolve */
+<?php /** @noinspection SqlIdentifier */
+
+/** @noinspection SqlResolve */
 
 
 namespace App\data\model;
@@ -191,7 +193,7 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " `LIMIT` 15";
+                            Image FROM " . $this->dbTable . " LIMIT 15";
 
         $stmt = $this->dbConn->prepare($query);
         return $stmt;
@@ -210,7 +212,7 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " `LIMIT` ?,? ";
+                            Image FROM " . $this->dbTable . " LIMIT ?,? ";
 
         $stmt = $this->dbConn->prepare($query);
         $stmt->bindParam(1, $from, PDO::PARAM_INT);
@@ -230,7 +232,7 @@ class Students extends BaseModel implements IDataAccess
                             Admin_Date, Age, Section_Name,
                             Faculty_Name, Level_Name, Semester_Name,
                             Index_No, Guardian_Name, Guardian_No,
-                            Image FROM " . $this->dbTable . " `WHERE` id = :id";
+                            Image FROM " . $this->dbTable . " WHERE id = :id";
 
         $stmt = $this->dbConn->prepare($query);
         $id = Validator::singleInput($id);
