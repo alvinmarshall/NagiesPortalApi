@@ -586,4 +586,38 @@ class StudentController extends BaseController
         }
         StudentResource::showData($this->model);
     }
+
+    function getAnnouncement()
+    {
+        $results = $this->model->getAnnouncement();
+        $results->execute();
+        $num = $results->rowCount();
+        $this->model->output['message'] = $num == 1 ? 'Available Message' : 'Available Messages';
+        $this->model->output['count'] = $num;
+        $this->model->output['messages'] = [];
+        if ($num == 0) {
+            StudentResource::showNoData($this->model);
+            return;
+        }
+
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
+            /**
+             * @var string $Message_BY
+             * @var string $Message_Level
+             * @var string $M_Read
+             * @var string $Message
+             * @var string $M_Date
+             */
+            $message_item = [
+                'sender' => $Message_BY,
+                'level' => $Message_Level,
+                'content' => $Message,
+                'status' => $M_Read,
+                'date' => $M_Date
+            ];
+            array_push($this->model->output['messages'], $message_item);
+        }
+        StudentResource::showData($this->model);
+    }
 }

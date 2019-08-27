@@ -25,6 +25,7 @@ class Router
             "/api/students/teachers" => "StudentController@getTeachers",
             "/api/students/circular" => "StudentController@getCircular",
             "/api/students/billing" => "StudentController@getBilling",
+            "/api/students/announcement" => "StudentController@getAnnouncement",
 
 
             /**Users routes*/

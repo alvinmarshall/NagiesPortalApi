@@ -376,4 +376,17 @@ class Students extends BaseModel implements IDataAccess
         $stmt->bindParam(1, $id);
         return $stmt;
     }
+
+    function getAnnouncement()
+    {
+        $level = 'administrator';
+        $this->output['type'] = 'Announcement';
+        /** @noinspection SqlDialectInspection */
+        $query = "SELECT 
+                        id, Message_BY, M_Date, Message, Message_Level, M_Read
+                        FROM message WHERE Message_Level = ? ORDER BY M_Date DESC ";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->bindParam(1, $level);
+        return $stmt;
+    }
 }
